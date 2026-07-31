@@ -1,0 +1,317 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id_admin         Int             @id @default(autoincrement())
+  nama_admin       String          @db.VarChar(100)
+  email            String          @unique(map: "email") @db.VarChar(100)
+  password         String          @db.VarChar(255)
+  foto_profil      String?         @db.VarChar(255)
+  alamat           String?         @db.Text
+  no_hp            String?         @db.VarChar(20)
+  reset_otp        String?         @db.VarChar(6)
+  reset_otp_expiry DateTime?       @db.DateTime(0)
+  google_id        String?         @unique @db.VarChar(100)
+  facebook_id      String?         @unique @db.VarChar(100)
+  aturan_tips      AturanDanTips[]
+  jadwal_donor     JadwalDonor[]
+  lokasi_donor     LokasiDonor[]
+  pendaftaran      Pendaftaran[]
+  pendonor         Pendonor[]
+  riwayat_donor    RiwayatDonor[]
+  stok_darah       StokDarah[]
+
+  @@map("admin")
+}
+
+model LokasiDonor {
+  id_lokasi    Int           @id @default(autoincrement())
+  id_admin     Int
+  nama_lokasi  String        @db.VarChar(150)
+  alamat       String        @db.Text
+  kota         String        @db.VarChar(100)
+  no_hp        String?       @db.VarChar(20)
+  longitude    Decimal?      @db.Decimal(10, 7)
+  latitude     Decimal?      @db.Decimal(10, 7)
+  jadwal_donor JadwalDonor[]
+  admin        Admin         @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_lokasi_admin")
+  stok_darah   StokDarah[]
+
+  @@index([id_admin], map: "fk_lokasi_admin")
+  @@map("lokasi_donor")
+}
+
+model Pendonor {
+  id_pendonor    Int                    @id @default(autoincrement())
+  id_admin       Int
+  nik            String                 @unique(map: "nik") @db.VarChar(16)
+  nama_lengkap   String                 @db.VarChar(100)
+  jenis_kelamin  pendonor_jenis_kelamin
+  tanggal_lahir  DateTime               @db.Date
+  berat_badan    Decimal?               @db.Decimal(5, 2)
+  tinggi_badan   Decimal?               @db.Decimal(5, 2)
+  alamat         String?                @db.Text
+  no_hp          String?                @db.VarChar(20)
+  email          String                 @unique(map: "email") @db.VarChar(100)
+  password       String?                 @db.VarChar(255)
+  foto_profil    String?                @db.VarChar(255)
+  golongan_darah String                 @default("O+") @db.VarChar(3)
+  pendaftaran    Pendaftaran[]
+  admin          Admin                  @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_pendonor_admin")
+  riwayat_donor  RiwayatDonor[]
+  kota                String?   @db.VarChar(100)
+  profesi             String?   @db.VarChar(100)
+  foto_ktp            String?   @db.VarChar(255)
+  reset_otp           String?   @db.VarChar(6)
+  reset_otp_expiry    DateTime?
+  is_deleted          Boolean   @default(false)
+  deleted_at          DateTime?
+  fcm_token           String?   @db.VarChar(255)
+  notifikasi Notifikasi[]
+  feedback    Feedback[]
+  pengaturan  PengaturanPendonor?
+  google_id   String? @unique @db.VarChar(100)
+  facebook_id String? @unique @db.VarChar(100)
+
+  @@index([id_admin], map: "fk_pendonor_admin")
+  @@map("pendonor")
+}
+
+model JadwalDonor {
+  id_jadwal               Int                        @id @default(autoincrement())
+  id_admin                Int
+  id_lokasi               Int
+  status_jadwal           jadwal_donor_status_jadwal @default(aktif)
+  kuota                   Int
+  jam_mulai               DateTime                   @db.Time(0)
+  jam_selesai             DateTime                   @db.Time(0)
+  nomor_antrian           Int?                       @default(0)
+  nama_penanggung_jawab   String?                    @db.VarChar(100)
+  kontak_penanggung_jawab String?                    @db.VarChar(20)
+  total_pendonor_offline  Int?
+  pendonor_hadir          Int?
+  darah_terkumpul         Int?
+  foto_lokasi             String?                    @db.Text
+  tanggal_pelaksanaan     DateTime?                  @db.Date
+  admin                   Admin                      @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_jadwal_admin")
+  lokasi                  LokasiDonor                @relation(fields: [id_lokasi], references: [id_lokasi], onDelete: Cascade, map: "fk_jadwal_lokasi")
+  pendaftaran             Pendaftaran[]
+
+  @@index([id_admin], map: "fk_jadwal_admin")
+  @@index([id_lokasi], map: "fk_jadwal_lokasi")
+  @@map("jadwal_donor")
+}
+
+model Pendaftaran {
+  id_pendaftaran     Int                            @id @default(autoincrement())
+  id_admin           Int
+  id_pendonor        Int
+  id_jadwal          Int
+  nomor_antrian      Int
+  tanggal_daftar     DateTime                       @default(now()) @db.DateTime(0)
+  status_pendaftaran pendaftaran_status_pendaftaran @default(menunggu)
+  admin              Admin                          @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_pendaftaran_admin")
+  jadwal             JadwalDonor                    @relation(fields: [id_jadwal], references: [id_jadwal], onDelete: Cascade, map: "fk_pendaftaran_jadwal")
+  pendonor           Pendonor                       @relation(fields: [id_pendonor], references: [id_pendonor], onDelete: Cascade, map: "fk_pendaftaran_pendonor")
+  kuesioner  KuesionerKesehatan?
+  feedback  Feedback[]
+
+  @@index([id_admin], map: "fk_pendaftaran_admin")
+  @@index([id_jadwal], map: "fk_pendaftaran_jadwal")
+  @@index([id_pendonor], map: "fk_pendaftaran_pendonor")
+  @@map("pendaftaran")
+}
+
+model RiwayatDonor {
+  id_riwayat      Int                        @id @default(autoincrement())
+  id_admin        Int
+  id_pendonor     Int
+  tanggal_donor   DateTime                   @db.Date
+  status_donor    riwayat_donor_status_donor
+  lokasi_donor    String                     @db.VarChar(150)
+  keterangan      String?                    @db.Text
+  darah_terkumpul Int?
+  admin           Admin                      @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_riwayat_admin")
+  pendonor        Pendonor                   @relation(fields: [id_pendonor], references: [id_pendonor], onDelete: Cascade, map: "fk_riwayat_pendonor")
+  hemoglobin              Decimal?  @db.Decimal(4, 1)
+  tekanan_darah_sistole   Int?
+  tekanan_darah_diastole  Int?
+  status_skrining         riwayat_donor_status_skrining?
+  sertifikat SertifikatDonor?
+
+  @@index([id_admin], map: "fk_riwayat_admin")
+  @@index([id_pendonor], map: "fk_riwayat_pendonor")
+  @@map("riwayat_donor")
+}
+
+model StokDarah {
+  id_stok        Int          @id @default(autoincrement())
+  id_admin       Int
+  tanggal_update DateTime     @default(now()) @db.DateTime(0)
+  golongan_darah String       @db.VarChar(3)
+  jumlah_kantong Int          @default(0)
+  id_lokasi      Int?
+  admin          Admin        @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_stok_admin")
+  lokasi         LokasiDonor? @relation(fields: [id_lokasi], references: [id_lokasi], onDelete: Cascade, map: "fk_stok_lokasi")
+
+  @@index([id_admin], map: "fk_stok_admin")
+  @@index([id_lokasi], map: "fk_stok_lokasi")
+  @@map("stok_darah")
+}
+
+model AturanDanTips {
+  id_tips        Int                    @id @default(autoincrement())
+  id_admin       Int
+  judul          String                 @db.VarChar(150)
+  tanggal_dibuat DateTime               @default(now()) @db.DateTime(0)
+  tanggal_diubah DateTime?              @updatedAt @db.DateTime(0)
+  status         aturan_dan_tips_status @default(draft)
+  kategori       String                 @db.VarChar(100)
+  isi            String                 @db.Text
+  admin          Admin                  @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_tips_admin")
+
+  @@index([id_admin], map: "fk_tips_admin")
+  @@map("aturan_dan_tips")
+}
+
+model KuesionerKesehatan {
+  id_kuesioner              Int      @id @default(autoincrement())
+  id_pendaftaran            Int      @unique
+  demam_flu_batuk           Boolean
+  sehat_hari_ini            Boolean
+  pernah_dirawat            Boolean
+  sudah_makan               Boolean
+  konsumsi_alkohol          Boolean
+  konsumsi_obat             Boolean
+  pernah_pingsan_donor      Boolean
+  riwayat_jantung_diabetes  Boolean
+  riwayat_hepatitis_hiv     Boolean
+  hamil_menyusui            Boolean
+  baru_operasi              Boolean
+  baru_vaksin               Boolean
+  bersedia_sukarela         Boolean
+  layak_donor               Boolean  @default(true)
+  catatan_kelayakan         String?  @db.Text
+  created_at                DateTime @default(now())
+
+  pendaftaran               Pendaftaran @relation(fields: [id_pendaftaran], references: [id_pendaftaran], onDelete: Cascade)
+
+  @@map("kuesioner_kesehatan")
+}
+
+model Notifikasi {
+  id_notifikasi Int             @id @default(autoincrement())
+  id_pendonor   Int
+  tipe          notifikasi_tipe
+  judul         String          @db.VarChar(150)
+  pesan         String          @db.Text
+  is_read       Boolean         @default(false)
+  created_at    DateTime        @default(now())
+
+  pendonor      Pendonor @relation(fields: [id_pendonor], references: [id_pendonor], onDelete: Cascade)
+
+  @@map("notifikasi")
+  @@index([id_pendonor])
+}
+
+model Feedback {
+  id_feedback     Int      @id @default(autoincrement())
+  id_pendonor     Int
+  id_pendaftaran  Int?
+  rating          Int
+  saran_keluhan   String?  @db.Text
+  created_at      DateTime @default(now())
+
+  pendonor        Pendonor     @relation(fields: [id_pendonor], references: [id_pendonor], onDelete: Cascade)
+  pendaftaran     Pendaftaran? @relation(fields: [id_pendaftaran], references: [id_pendaftaran], onDelete: SetNull)
+
+  @@map("feedback")
+}
+
+model EdukasiDonor {
+  id_edukasi Int                     @id @default(autoincrement())
+  kategori   edukasi_donor_kategori
+  icon       String                  @db.VarChar(50)
+  judul      String                  @db.VarChar(150)
+  deskripsi  String                  @db.Text
+  urutan     Int                     @default(0)
+
+  @@map("edukasi_donor")
+}
+
+model PengaturanPendonor {
+  id_pendonor Int      @id
+  notif_push  Boolean  @default(true)
+  notif_email Boolean  @default(false)
+  notif_sms   Boolean  @default(true)
+  bahasa      String   @default("id") @db.VarChar(5)
+  tema        String   @default("light") @db.VarChar(10)
+
+  pendonor    Pendonor @relation(fields: [id_pendonor], references: [id_pendonor], onDelete: Cascade)
+
+  @@map("pengaturan_pendonor")
+}
+
+model SertifikatDonor {
+  id_sertifikat    Int      @id @default(autoincrement())
+  id_riwayat       Int      @unique
+  nomor_sertifikat String   @unique @db.VarChar(50)
+  file_path        String   @db.VarChar(255)
+  tanggal_terbit   DateTime @default(now())
+
+  riwayat          RiwayatDonor @relation(fields: [id_riwayat], references: [id_riwayat], onDelete: Cascade)
+
+  @@map("sertifikat_donor")
+}
+
+enum jadwal_donor_status_jadwal {
+  aktif
+  nonaktif
+  selesai
+}
+
+enum pendonor_jenis_kelamin {
+  Laki_laki @map("Laki-laki")
+  Perempuan
+}
+
+enum riwayat_donor_status_donor {
+  berhasil
+  gagal
+  ditunda
+}
+
+enum aturan_dan_tips_status {
+  publish
+  draft
+}
+
+enum pendaftaran_status_pendaftaran {
+  menunggu
+  diterima
+  ditolak
+  batal
+}
+
+enum riwayat_donor_status_skrining {
+  negatif
+  positif
+  pending
+}
+
+enum notifikasi_tipe {
+  info
+  success
+  warning
+}
+
+enum edukasi_donor_kategori {
+  edukasi
+  manfaat
+}
