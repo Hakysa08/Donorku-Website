@@ -258,7 +258,7 @@ export async function GET(req: NextRequest) {
       /* ===================================================
          JADWAL DONOR HARI INI
 
-         Status aktif saja.
+         Status aktif saja, tanggal pelaksanaan tepat hari ini.
       =================================================== */
 
       prisma.jadwalDonor.findMany({

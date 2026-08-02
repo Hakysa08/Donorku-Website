@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Maximize2,
   Pencil,
   X,
 } from "lucide-react";
+
+import BackButton from "@/components/BackButton";
 
 /* =========================================================
    TYPE
@@ -178,13 +179,10 @@ export default function DetailJadwalPage() {
   if (error || !data) {
     return (
       <div className="min-h-full bg-white px-10 py-7">
-        <button
+        <BackButton
           onClick={() => router.push("/dashboard/jadwaldonor")}
-          className="mb-7 flex h-[53px] items-center gap-2 rounded-full border border-gray-200 bg-white px-7 text-base font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          <ArrowLeft size={19} />
-          Kembali
-        </button>
+          className="mb-7"
+        />
 
         <p className="text-base text-red-500">
           {error || "Jadwal tidak ditemukan"}
@@ -208,13 +206,9 @@ export default function DetailJadwalPage() {
         </h1>
 
         <div className="flex items-center gap-3">
-          <button
+          <BackButton
             onClick={() => router.push("/dashboard/jadwaldonor")}
-            className="flex h-[53px] items-center gap-2 rounded-full border border-gray-200 bg-white px-7 text-base font-semibold text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft size={19} />
-            Kembali
-          </button>
+          />
 
           <button
             onClick={() =>
@@ -331,7 +325,17 @@ export default function DetailJadwalPage() {
       {/* DETAIL DONOR */}
       <h2 className="mb-5 text-xl font-bold text-gray-900">Detail Donor</h2>
 
-      <div className="grid grid-cols-2 gap-x-10 gap-y-7 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-10 gap-y-7 sm:grid-cols-3 lg:grid-cols-6">
+        <DetailItem
+          label="Kuota Maksimal"
+          value={formatAngka(data.kuota)}
+        />
+        <DetailItem
+          label="Sisa Kuota"
+          value={formatAngka(
+            Math.max(0, data.kuota - (data.total_pendonor_offline ?? 0))
+          )}
+        />
         <DetailItem
           label="Total Pendaftar (Online)"
           value={formatAngka(data.total_pendaftar_online)}

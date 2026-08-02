@@ -74,39 +74,22 @@ const WARNA_DONUT = [
 
 /* =========================================================
    ICON GOLONGAN DARAH
+
+   Ikon diambil dari /public/tipe-darah (contoh:
+   "A-" -> /tipe-darah/blood_a-.png). Untuk kartu stok
+   kritis/menipis yang berlatar merah dipakai versi putih
+   (_wh) supaya ikonnya tetap terlihat.
 ========================================================= */
 
-function DropletBadge({
-  label,
-  aktif,
-}: {
-  label: string;
-  aktif: boolean;
-}) {
-  return (
-    <span className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center">
-      <svg
-        viewBox="0 0 40 48"
-        className="absolute inset-0 h-full w-full"
-        aria-hidden="true"
-      >
-        <path
-          d="M20 2S4 22 4 31.5C4 40.6 11.2 46 20 46s16-5.4 16-14.5C36 22 20 2 20 2Z"
-          fill="none"
-          stroke={aktif ? "#ffffff" : "#222222"}
-          strokeWidth={2.5}
-        />
-      </svg>
+const GOLONGAN_TERSEDIA = [
+  "a+", "a-", "b+", "b-",
+  "ab+", "ab-", "o+", "o-",
+];
 
-      <span
-        className={`relative mt-1 text-[11px] font-bold ${
-          aktif ? "text-white" : "text-gray-900"
-        }`}
-      >
-        {label}
-      </span>
-    </span>
-  );
+function ikonStok(golongan: string, putih: boolean): string {
+  const g = golongan.trim().toLowerCase();
+  const nama = GOLONGAN_TERSEDIA.includes(g) ? g : "o+";
+  return `/tipe-darah/blood_${nama}${putih ? "_wh" : ""}.png`;
 }
 
 /* =========================================================
@@ -132,9 +115,10 @@ function KartuStok({
           : "border-gray-200 bg-white text-gray-900"
       }`}
     >
-      <DropletBadge
-        label={golonganDarah}
-        aktif={aktif}
+      <img
+        src={ikonStok(golonganDarah, aktif)}
+        alt={golonganDarah}
+        className="h-11 w-11 shrink-0 object-contain"
       />
 
       <div className="min-w-0 flex-1">

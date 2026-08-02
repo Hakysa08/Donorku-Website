@@ -10,11 +10,12 @@ import {
   useState,
 } from "react";
 
-import { ArrowLeft, Eye, Save, Trash2 } from "lucide-react";
+import { Eye, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 // SESUAIKAN PATH INI kalau lokasi komponennya beda
 import AskModal from "@/components/AskModal";
+import BackButton from "@/components/BackButton";
 
 /* =========================================================
    TYPE
@@ -35,6 +36,7 @@ type FormDataJadwal = {
   nama_penanggung_jawab: string;
   kontak_penanggung_jawab: string;
   kuota: string;
+  total_pendaftar_online: string;
   total_pendonor_offline: string;
   pendonor_hadir: string;
   darah_terkumpul: string;
@@ -48,6 +50,7 @@ const INITIAL_FORM: FormDataJadwal = {
   nama_penanggung_jawab: "",
   kontak_penanggung_jawab: "",
   kuota: "",
+  total_pendaftar_online: "",
   total_pendonor_offline: "",
   pendonor_hadir: "",
   darah_terkumpul: "",
@@ -202,7 +205,8 @@ export default function TambahJadwalPage() {
       !form.id_lokasi ||
       !form.nama_penanggung_jawab.trim() ||
       !form.kontak_penanggung_jawab.trim() ||
-      !form.kuota
+      !form.kuota ||
+      !form.total_pendaftar_online
     ) {
       setError("Lengkapi semua field wajib");
       return;
@@ -246,6 +250,10 @@ export default function TambahJadwalPage() {
         form.kontak_penanggung_jawab.trim()
       );
       data.append("kuota", form.kuota);
+      data.append(
+        "total_pendaftar_online",
+        form.total_pendaftar_online || "0"
+      );
       data.append(
         "total_pendonor_offline",
         form.total_pendonor_offline || "0"
@@ -305,19 +313,14 @@ export default function TambahJadwalPage() {
           </h1>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
+            <BackButton
               onClick={() => setShowKonfirmasiKembali(true)}
-              className="flex h-[53px] items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-7 text-base font-semibold text-gray-600 transition hover:bg-gray-50"
-            >
-              <ArrowLeft size={19} />
-              Kembali
-            </button>
+            />
 
             <button
               type="submit"
               disabled={saving}
-              className="flex h-[53px] items-center justify-center gap-2 rounded-xl bg-red-500 px-8 text-base font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-[53px] items-center justify-center gap-2 rounded-full bg-red-500 px-8 text-base font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save size={19} />
               {saving ? "Menyimpan..." : "Simpan"}
@@ -334,7 +337,7 @@ export default function TambahJadwalPage() {
         <SectionTitle>Detail Jadwal</SectionTitle>
 
         <Card>
-          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-3">
             <Field label="Hari / Tanggal" required>
               <input
                 type="date"
@@ -389,12 +392,12 @@ export default function TambahJadwalPage() {
               </select>
             </Field>
 
-            <Field label="Alamat Lokasi">
+            <Field label="Alamat Lokasi" required>
               <textarea
                 value={lokasiTerpilih?.alamat ?? ""}
-                placeholder="Alamat otomatis mengikuti lokasi"
+                placeholder="Alamat otomatis terisi setelah memilih lokasi"
                 readOnly
-                rows={4}
+                rows={3}
                 className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 px-6 py-3.5 text-lg text-black placeholder:text-gray-400 focus:outline-none"
               />
             </Field>
@@ -404,7 +407,7 @@ export default function TambahJadwalPage() {
         <SectionTitle>Penanggung Jawab</SectionTitle>
 
         <Card>
-          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-2">
             <Field label="Nama Penanggung Jawab" required>
               <input
                 type="text"
@@ -434,15 +437,28 @@ export default function TambahJadwalPage() {
         <SectionTitle>Detail Donor</SectionTitle>
 
         <Card>
-          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-2 xl:grid-cols-3">
-            <Field label="Kuota Pendonor" required>
+          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-3">
+            <Field label="Kuota Maksimal" required>
               <input
                 type="number"
                 min="0"
                 name="kuota"
                 value={form.kuota}
                 onChange={handleChange}
-                placeholder="Masukkan kuota"
+                placeholder="Masukan Kuota Maksimal"
+                required
+                className={inputClass}
+              />
+            </Field>
+
+            <Field label="Total Pendaftar (Online)" required>
+              <input
+                type="number"
+                min="0"
+                name="total_pendaftar_online"
+                value={form.total_pendaftar_online}
+                onChange={handleChange}
+                placeholder="Masukan Total Pendaftar Online"
                 required
                 className={inputClass}
               />
@@ -499,8 +515,7 @@ export default function TambahJadwalPage() {
           />
 
           <label className="mb-2.5 block text-lg font-semibold text-gray-800">
-            Foto Lokasi
-            <span className="text-red-500"> *</span>
+            Foto
           </label>
 
           <button

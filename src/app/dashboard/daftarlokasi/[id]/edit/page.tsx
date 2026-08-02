@@ -3,9 +3,10 @@
 import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, Eye, Save, Trash2, X } from "lucide-react";
+import { Eye, Save, Trash2, X } from "lucide-react";
 
 import AskModal from "@/components/AskModal";
+import BackButton from "@/components/BackButton";
 
 type Lokasi = {
   id_lokasi: number;
@@ -277,14 +278,9 @@ export default function EditLokasiPage({
         </h1>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <BackButton
             onClick={() => setShowKonfirmasiKembali(true)}
-            className="flex h-[53px] items-center gap-2 rounded-full border border-gray-200 bg-white px-7 text-base font-semibold text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft size={19} />
-            Kembali
-          </button>
+          />
 
           <button
             type="submit"
