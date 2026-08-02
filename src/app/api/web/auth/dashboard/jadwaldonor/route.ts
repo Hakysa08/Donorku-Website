@@ -372,7 +372,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tanggal = new Date(`${tanggal_pelaksanaan}T00:00:00`);
+    /* Anchor sebagai UTC midnight (bukan local midnight) supaya
+       tanggal yang tersimpan di kolom @db.Date TIDAK bergeser
+       mundur satu hari akibat konversi timezone server. */
+    const tanggal = new Date(`${tanggal_pelaksanaan}T00:00:00Z`);
 
     if (Number.isNaN(tanggal.getTime())) {
       return NextResponse.json(

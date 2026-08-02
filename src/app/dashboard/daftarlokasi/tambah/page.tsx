@@ -3,8 +3,9 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, Eye, Save, Trash2 } from "lucide-react";
+import { Eye, Save, Trash2 } from "lucide-react";
 import AskModal from "@/components/AskModal";
+import BackButton from "@/components/BackButton";
 
 /* =========================================================
    STYLE & SUBKOMPONEN
@@ -193,14 +194,9 @@ export default function TambahLokasiPage() {
           </h1>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
+            <BackButton
               onClick={() => setShowKonfirmasiKembali(true)}
-              className="flex h-[53px] items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-7 text-base font-semibold text-gray-600 transition hover:bg-gray-50"
-            >
-              <ArrowLeft size={19} />
-              Kembali
-            </button>
+            />
 
             <button
               type="submit"

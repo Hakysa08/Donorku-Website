@@ -37,10 +37,10 @@ const MENU_ITEMS = [
   },
   {
     label: "Aturan dan tips",
-    href: "/dashboard/aturan_tips",
+    href: "/dashboard/aturantips",
     icon: "/sidebar/aturan_tips.png",
     activeIcon: "/sidebar/aturan_tips_red.png",
-  },
+  },  
   {
     label: "Riwayat Donor",
     href: "/dashboard/riwayat",
@@ -55,7 +55,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 flex h-screen w-80 flex-col border-r-2 border-black bg-white px-5 py-7">
+    <aside className="sticky top-0 flex h-screen w-64 flex-col border-r-2 border-black bg-white px-5 py-7">
 
       {/* Logo Donorku */}
       <Link

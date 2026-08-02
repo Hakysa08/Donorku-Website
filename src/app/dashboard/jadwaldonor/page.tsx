@@ -413,9 +413,7 @@ export default function JadwalDonorPage() {
                 </th>
 
                 <th className="px-6 py-5 text-[14px] font-bold">
-                  Total Pendonor
-                  <br />
-                  (Online)
+                  Kuota
                 </th>
 
                 <th className="px-6 py-5 text-[14px] font-bold">
@@ -439,7 +437,7 @@ export default function JadwalDonorPage() {
                 </th>
 
                 <th className="px-6 py-5 text-[14px] font-bold">
-                  Aksi
+                  Action
                 </th>
               </tr>
             </thead>
@@ -499,10 +497,9 @@ export default function JadwalDonorPage() {
                       )}
                     </td>
 
-                    <td className="px-4 py-3 text-center">
-                      {
-                        item.total_pendaftar_online
-                      }
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {item.total_pendonor_offline}/
+                      {item.kuota}
                     </td>
 
                     <td className="px-4 py-3 whitespace-nowrap">

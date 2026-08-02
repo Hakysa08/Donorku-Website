@@ -2,7 +2,9 @@
 
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save } from "lucide-react";
+
+import BackButton from "@/components/BackButton";
 import AskModal from "@/components/AskModal";
 
 type FormStok = {
@@ -180,14 +182,9 @@ export default function EditStokDarahPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <BackButton
             onClick={() => setKonfirmasiKembali(true)}
-            className="flex h-11 items-center gap-2 rounded-full border border-gray-200 px-5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft size={16} />
-            Kembali
-          </button>
+          />
 
           <button
             type="submit"

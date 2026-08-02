@@ -3,7 +3,9 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, Eye, MapPin, Pencil, X } from "lucide-react";
+import { Eye, MapPin, Pencil, X } from "lucide-react";
+
+import BackButton from "@/components/BackButton";
 
 /* =========================================================
    TYPE
@@ -145,14 +147,9 @@ export default function DetailLokasiPage({
         </h1>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <BackButton
             onClick={() => router.push("/dashboard/daftarlokasi")}
-            className="flex h-10 items-center gap-2 rounded-full border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft size={16} />
-            Kembali
-          </button>
+          />
 
           <button
             type="button"

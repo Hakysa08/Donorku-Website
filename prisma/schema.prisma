@@ -39,6 +39,7 @@ model LokasiDonor {
   no_hp        String?       @db.VarChar(20)
   longitude    Decimal?      @db.Decimal(10, 7)
   latitude     Decimal?      @db.Decimal(10, 7)
+  foto_lokasi  String?       @db.VarChar(255)
   jadwal_donor JadwalDonor[]
   admin        Admin         @relation(fields: [id_admin], references: [id_admin], onDelete: Cascade, map: "fk_lokasi_admin")
   stok_darah   StokDarah[]
@@ -94,6 +95,7 @@ model JadwalDonor {
   nomor_antrian           Int?                       @default(0)
   nama_penanggung_jawab   String?                    @db.VarChar(100)
   kontak_penanggung_jawab String?                    @db.VarChar(20)
+  total_pendonor_online   Int?
   total_pendonor_offline  Int?
   pendonor_hadir          Int?
   darah_terkumpul         Int?
@@ -196,9 +198,8 @@ model KuesionerKesehatan {
   baru_operasi              Boolean
   baru_vaksin               Boolean
   bersedia_sukarela         Boolean
-  layak_donor               Boolean  @default(true)
-  catatan_kelayakan         String?  @db.Text
   created_at                DateTime @default(now())
+  // layak_donor dan catatan_kelayakan DIHAPUS
 
   pendaftaran               Pendaftaran @relation(fields: [id_pendaftaran], references: [id_pendaftaran], onDelete: Cascade)
 
@@ -276,6 +277,15 @@ enum jadwal_donor_status_jadwal {
   selesai
 }
 
+enum pendaftaran_status_pendaftaran {
+  menunggu
+  diterima
+  ditolak
+  dibatalkan
+  selesai      // pendonor hadir dan selesai donor — admin yang set
+  batal_hadir  // pendonor tidak hadir padahal sudah diterima — admin yang set
+}
+
 enum pendonor_jenis_kelamin {
   Laki_laki @map("Laki-laki")
   Perempuan
@@ -290,13 +300,6 @@ enum riwayat_donor_status_donor {
 enum aturan_dan_tips_status {
   publish
   draft
-}
-
-enum pendaftaran_status_pendaftaran {
-  menunggu
-  diterima
-  ditolak
-  batal
 }
 
 enum riwayat_donor_status_skrining {

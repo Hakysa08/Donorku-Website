@@ -4,10 +4,11 @@
 
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Eye, Save, Trash2 } from "lucide-react";
+import { Eye, Save, Trash2 } from "lucide-react";
 
 // SESUAIKAN PATH INI kalau lokasi komponennya beda
 import AskModal from "@/components/AskModal";
+import BackButton from "@/components/BackButton";
 
 type Lokasi = {
   id_lokasi: number;
@@ -23,6 +24,7 @@ type FormDataJadwal = {
   id_lokasi: string;
   nama_penanggung_jawab: string;
   kontak_penanggung_jawab: string;
+  kuota: string;
   total_pendaftar_online: string;
   total_pendonor_offline: string;
   pendonor_hadir: string;
@@ -37,6 +39,7 @@ const INITIAL_FORM: FormDataJadwal = {
   id_lokasi: "",
   nama_penanggung_jawab: "",
   kontak_penanggung_jawab: "",
+  kuota: "",
   total_pendaftar_online: "",
   total_pendonor_offline: "",
   pendonor_hadir: "",
@@ -168,6 +171,7 @@ export default function EditJadwalPage() {
           id_lokasi: String(d.id_lokasi),
           nama_penanggung_jawab: d.nama_penanggung_jawab ?? "",
           kontak_penanggung_jawab: d.kontak_penanggung_jawab ?? "",
+          kuota: String(d.kuota ?? ""),
           total_pendaftar_online: String(d.total_pendaftar_online ?? ""),
           total_pendonor_offline: String(d.total_pendonor_offline ?? ""),
           pendonor_hadir: String(d.pendonor_hadir ?? ""),
@@ -269,6 +273,7 @@ export default function EditJadwalPage() {
       !form.id_lokasi ||
       !form.nama_penanggung_jawab.trim() ||
       !form.kontak_penanggung_jawab.trim() ||
+      !form.kuota ||
       !form.total_pendaftar_online
     ) {
       setError("Lengkapi semua field wajib");
@@ -306,7 +311,11 @@ export default function EditJadwalPage() {
         "kontak_penanggung_jawab",
         form.kontak_penanggung_jawab.trim()
       );
-      data.append("kuota", form.total_pendaftar_online || "0");
+      data.append("kuota", form.kuota || "0");
+      data.append(
+        "total_pendaftar_online",
+        form.total_pendaftar_online || "0"
+      );
       data.append(
         "total_pendonor_offline",
         form.total_pendonor_offline || "0"
@@ -360,19 +369,15 @@ export default function EditJadwalPage() {
         </h1>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <BackButton
             onClick={() => setShowKonfirmasiKembali(true)}
-            className="flex h-[53px] items-center gap-2 rounded-full border border-gray-200 bg-white px-7 text-base font-semibold text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft size={19} /> Kembali
-          </button>
+          />
 
           <button
             type="submit"
             form="form-edit-jadwal"
             disabled={saving}
-            className="flex h-[53px] items-center gap-2 rounded-full bg-[#ff2938] px-7 text-base font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+            className="flex h-[53px] items-center gap-2 rounded-full bg-red-500 px-7 text-base font-semibold text-white hover:bg-red-600 disabled:opacity-50"
           >
             <Save size={19} /> {saving ? "Menyimpan..." : "Simpan"}
           </button>
@@ -439,17 +444,15 @@ export default function EditJadwalPage() {
               </select>
             </Field>
 
-            <div className="md:col-span-2">
-              <Field label="Alamat Lokasi" required>
-                <textarea
-                  readOnly
-                  placeholder="Alamat otomatis terisi setelah memilih lokasi"
-                  rows={3}
-                  value={lokasiTerpilih?.alamat ?? ""}
-                  className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 px-6 py-3.5 text-lg text-black placeholder:text-gray-400 focus:outline-none"
-                />
-              </Field>
-            </div>
+            <Field label="Alamat Lokasi" required>
+              <textarea
+                readOnly
+                placeholder="Alamat otomatis terisi setelah memilih lokasi"
+                rows={3}
+                value={lokasiTerpilih?.alamat ?? ""}
+                className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 px-6 py-3.5 text-lg text-black placeholder:text-gray-400 focus:outline-none"
+              />
+            </Field>
 
             {/*
               Field "Status Jadwal" sengaja disembunyikan dari UI (sesuai
@@ -491,7 +494,20 @@ export default function EditJadwalPage() {
 
         <SectionTitle>Detail Donor</SectionTitle>
         <Card>
-          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-3">
+            <Field label="Kuota Maksimal" required>
+              <input
+                type="number"
+                min="0"
+                name="kuota"
+                value={form.kuota}
+                onChange={handleChange}
+                placeholder="Masukan Kuota Maksimal"
+                required
+                className={inputClass}
+              />
+            </Field>
+
             <Field label="Total Pendaftar (Online)" required>
               <input
                 type="number"
@@ -564,61 +580,59 @@ export default function EditJadwalPage() {
             disabled={slots.length >= MAX_FOTO}
             className="flex h-14 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-lg text-gray-400 transition hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <span className="flex-1 px-5">Upload Gambar</span>
+            <span className="flex-1 px-5">Pilih Gambar</span>
             <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-7 text-gray-700">
               Browse
             </span>
           </button>
 
+          {slots.length > 0 && (
+            <div className="mt-5">
+              <p className="mb-3.5 text-lg font-medium text-gray-800">
+                Preview ({slots.length}/{MAX_FOTO})
+              </p>
+
+              <div className="flex flex-wrap gap-5">
+                {slots.map((slot) => (
+                  <div
+                    key={slot.key}
+                    className="group relative aspect-square w-44 overflow-hidden rounded-xl border border-gray-200 bg-gray-50"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={slot.url}
+                      alt="Foto lokasi"
+                      className="h-full w-full object-cover"
+                    />
+
+                    <div className="absolute right-2 top-2 flex gap-1.5">
+                      <a
+                        href={slot.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Lihat"
+                        className="flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
+                      >
+                        <Eye size={17} />
+                      </a>
+                      <button
+                        type="button"
+                        title="Hapus"
+                        onClick={() => hapusFoto(slot.key)}
+                        className="flex h-9 w-9 items-center justify-center rounded-md bg-red-500 text-white shadow hover:bg-red-600"
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <p className="mb-5 mt-2.5 text-sm text-gray-400">
             Format JPG/JPEG, maksimal {MAX_FOTO} gambar, masing-masing 5 MB.
           </p>
-
-          <p className="mb-3.5 text-lg font-medium text-gray-800">
-            Preview ({slots.length}/{MAX_FOTO})
-          </p>
-
-          <div className="flex flex-wrap gap-5">
-            {slots.map((slot) => (
-              <div
-                key={slot.key}
-                className="group relative aspect-square w-44 overflow-hidden rounded-xl border border-gray-200 bg-gray-50"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={slot.url}
-                  alt="Foto lokasi"
-                  className="h-full w-full object-cover"
-                />
-
-                <div className="absolute right-2 top-2 flex gap-1.5">
-                  <a
-                    href={slot.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Lihat"
-                    className="flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
-                  >
-                    <Eye size={17} />
-                  </a>
-                  <button
-                    type="button"
-                    title="Hapus"
-                    onClick={() => hapusFoto(slot.key)}
-                    className="flex h-9 w-9 items-center justify-center rounded-md bg-red-500 text-white shadow hover:bg-red-600"
-                  >
-                    <Trash2 size={17} />
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {slots.length === 0 && (
-              <div className="flex h-40 w-full items-center justify-center rounded-xl border border-dashed border-gray-200 text-base text-gray-400">
-                Belum ada foto
-              </div>
-            )}
-          </div>
         </Card>
       </form>
 
