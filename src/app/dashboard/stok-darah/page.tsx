@@ -38,16 +38,7 @@ type ApiResponse = {
   pagination: Pagination;
 };
 
-const GOLONGAN_OPTIONS = [
-  "A+",
-  "A-",
-  "B+",
-  "B-",
-  "AB+",
-  "AB-",
-  "O+",
-  "O-",
-];
+const GOLONGAN_OPTIONS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const STATUS_OPTIONS: { value: StatusStok; label: string }[] = [
   { value: "aman", label: "Aman" },
@@ -113,7 +104,7 @@ function FilterDropdown({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-[52px] w-[190px] items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 text-[13px] text-gray-700 shadow-sm"
+        className="flex h-[52px] w-[190px] items-center justify-between rounded-2xl border border-gray-200 bg-white px-5 text-[13px] text-black shadow-sm"
       >
         <span className="truncate">
           {current ? current.label : label}
@@ -149,8 +140,8 @@ function FilterDropdown({
                 }}
                 className={`block w-full px-4 py-2 text-left text-[13px] hover:bg-gray-50 ${
                   option.value === value
-                    ? "font-semibold text-[#ff2938]"
-                    : "text-gray-700"
+                    ? "font-semibold text-red-600"
+                    : "text-black"
                 }`}
               >
                 {option.label}
@@ -250,11 +241,13 @@ export default function StokDarahPage() {
   }
 
   return (
-    <div className="min-h-full bg-white px-10 py-7 text-black">
+    <div className="min-h-full bg-white px-10 py-7">
       {/* ================= HEADER ================= */}
 
-      <div className="mb-8 flex items-center justify-between gap-6">
-        <h1 className="text-[36px] font-bold tracking-tight">Stok Darah</h1>
+      <div className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <h1 className="text-[36px] font-bold tracking-tight text-black">
+          Stok Darah
+        </h1>
 
         <div className="flex items-center gap-3">
           <FilterDropdown
@@ -285,7 +278,7 @@ export default function StokDarahPage() {
                 setStatus("");
                 setPage(1);
               }}
-              className="flex h-[52px] items-center gap-1 rounded-2xl border border-gray-200 bg-white px-4 text-[13px] text-gray-500 shadow-sm hover:bg-gray-50"
+              className="flex h-[52px] items-center gap-1 rounded-2xl border border-gray-200 bg-white px-5 text-[13px] text-black shadow-sm hover:bg-gray-50"
             >
               <X size={15} />
               Reset
@@ -298,16 +291,16 @@ export default function StokDarahPage() {
 
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
+          <table className="w-full min-w-[900px] border-collapse text-left text-[13px] text-black">
             <thead>
-              <tr className="border-b border-gray-400">
-                <th className="px-6 py-4 font-bold">ID</th>
-                <th className="px-4 py-4 font-bold">Golongan Darah</th>
-                <th className="px-4 py-4 font-bold">Lokasi</th>
-                <th className="px-4 py-4 font-bold">Jumlah Stok</th>
-                <th className="px-4 py-4 font-bold">Status</th>
-                <th className="px-4 py-4 font-bold">Terakhir Diperbarui</th>
-                <th className="px-4 py-4 text-center font-bold">Aksi</th>
+              <tr className="border-b border-black-400 text-black">
+                <th className="px-6 py-5 text-[14px] font-bold">ID</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Golongan Darah</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Lokasi</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Jumlah Stok</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Status</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Terakhir Diperbarui</th>
+                <th className="px-4 py-3 text-center text-[14px] font-bold">Action</th>
               </tr>
             </thead>
 
@@ -336,11 +329,11 @@ export default function StokDarahPage() {
                 stok.map((item) => (
                   <tr
                     key={item.id_stok}
-                    className="border-b border-gray-300 last:border-b-0"
+                    className="border-b border-black-300 last:border-b-0"
                   >
-                    <td className="px-6 py-3">{item.id_stok}</td>
+                    <td className="px-6 py-5 text-[14px]">{item.id_stok}</td>
 
-                    <td className="px-4 py-3 font-medium">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {item.golongan_darah}
                     </td>
 
@@ -348,7 +341,9 @@ export default function StokDarahPage() {
                       {item.lokasi?.nama_lokasi ?? "-"}
                     </td>
 
-                    <td className="px-4 py-3">{item.jumlah_kantong}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {item.jumlah_kantong}
+                    </td>
 
                     <td className="px-4 py-3">
                       <span
@@ -391,7 +386,7 @@ export default function StokDarahPage() {
             type="button"
             disabled={page <= 1}
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
           >
             <ChevronLeft size={17} />
           </button>
@@ -401,7 +396,7 @@ export default function StokDarahPage() {
               return (
                 <div
                   key={`ellipsis-${index}`}
-                  className="flex h-8 min-w-8 items-center justify-center px-1 text-sm"
+                  className="flex h-8 min-w-8 items-center justify-center px-1 text-sm text-black"
                 >
                   ...
                 </div>
@@ -417,8 +412,8 @@ export default function StokDarahPage() {
                 onClick={() => setPage(pageItem)}
                 className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm shadow-sm transition ${
                   active
-                    ? "bg-[#ff2938] text-white"
-                    : "border border-gray-200 bg-white hover:bg-gray-100"
+                    ? "bg-red-600 text-white"
+                    : "border border-gray-200 bg-white hover:bg-gray-100 text-black"
                 }`}
               >
                 {pageItem}
@@ -432,7 +427,7 @@ export default function StokDarahPage() {
             onClick={() =>
               setPage((prev) => Math.min(pagination.totalPages, prev + 1))
             }
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
           >
             <ChevronRight size={17} />
           </button>

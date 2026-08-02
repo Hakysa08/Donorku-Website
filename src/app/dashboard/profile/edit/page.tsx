@@ -347,13 +347,13 @@ export default function EditProfilePage() {
   ======================================================= */
 
   return (
-    <div className="w-full px-6 pb-10 pt-7">
+    <div className="min-h-full bg-white px-10 py-7">
 
       {/* ===================================================
           HEADER
       =================================================== */}
 
-      <h1 className="text-[32px] font-bold leading-tight tracking-tight text-black">
+      <h1 className="text-[36px] font-bold leading-tight tracking-tight text-black">
         Edit Profile
       </h1>
 

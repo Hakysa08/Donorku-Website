@@ -107,8 +107,8 @@ export default function Sidebar() {
                 href={href}
                 className={`flex items-center gap-3.5 rounded-lg px-3.5 py-3 text-base font-medium transition-colors ${
                   isActive
-                    ?  "text-red-600"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                    ? "text-red-600"
+                    : "text-black hover:bg-gray-50 hover:text-gray-700"
                 }`}
               >
                 {/* Icon */}

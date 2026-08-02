@@ -181,14 +181,9 @@ export default function FormAturanTips({
   ======================================================= */
 
   return (
-    /*
-     * Latar abu-abu dibuat memenuhi area konten
-     * seperti pada design Figma, sehingga padding
-     * bawaan layout dinetralkan dengan margin negatif.
-     */
-    <div className="-mx-8 -mb-8 min-h-[calc(100vh-72px)] bg-[#F3F4F6] px-14 pb-12 pt-8">
+    <div className="min-h-full bg-white px-10 py-7">
 
-      <h1 className="text-[32px] font-bold tracking-tight text-black">
+      <h1 className="text-[36px] font-bold tracking-tight text-black">
         {judulHalaman}
       </h1>
 

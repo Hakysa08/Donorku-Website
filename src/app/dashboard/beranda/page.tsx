@@ -74,11 +74,6 @@ const WARNA_DONUT = [
 
 /* =========================================================
    ICON GOLONGAN DARAH
-
-   Ikon diambil dari /public/tipe-darah (contoh:
-   "A-" -> /tipe-darah/blood_a-.png). Untuk kartu stok
-   kritis/menipis yang berlatar merah dipakai versi putih
-   (_wh) supaya ikonnya tetap terlihat.
 ========================================================= */
 
 const GOLONGAN_TERSEDIA = [
@@ -109,7 +104,7 @@ function KartuStok({
 
   return (
     <div
-      className={`flex min-h-[66px] items-center gap-3 rounded-xl border px-4 py-3 ${
+      className={`flex min-h-[78px] items-center gap-3 rounded-xl border px-4 py-3 ${
         aktif
           ? "border-red-500 bg-red-500 text-white"
           : "border-gray-200 bg-white text-gray-900"
@@ -118,14 +113,14 @@ function KartuStok({
       <img
         src={ikonStok(golonganDarah, aktif)}
         alt={golonganDarah}
-        className="h-11 w-11 shrink-0 object-contain"
+        className="h-12 w-12 shrink-0 object-contain"
       />
 
       <div className="min-w-0 flex-1">
-        <p className="whitespace-nowrap text-[17px] font-bold leading-none">
+        <p className="whitespace-nowrap text-[22px] font-bold leading-none">
           {jumlah}
 
-          <span className="ml-1 text-[9px] font-normal">
+          <span className="ml-1 text-[12px] font-normal">
             kantong
           </span>
         </p>
@@ -137,7 +132,7 @@ function KartuStok({
             }`}
           />
 
-          <span className="text-[9px]">
+          <span className="text-[12px]">
             {status}
           </span>
         </div>
@@ -158,11 +153,11 @@ function TombolLihatSemua({
   return (
     <Link
       href={href}
-      className="inline-flex h-8 shrink-0 items-center gap-2 rounded-full bg-red-500 px-4 text-[9px] font-semibold text-white transition-colors hover:bg-red-600"
+      className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full bg-red-500 px-4 text-[12px] font-semibold text-white transition-colors hover:bg-red-600"
     >
       Lihat Semua
 
-      <img src="/button/seeall.png" alt="Lihat Semua" className="h-3 w-3" />
+      <img src="/button/seeall.png" alt="Lihat Semua" className="h-3.5 w-3.5" />
     </Link>
   );
 }
@@ -321,12 +316,12 @@ export default function BerandaPage() {
           HEADER
       =================================================== */}
 
-      <div className="mb-5">
-        <h1 className="text-[32px] font-bold leading-tight tracking-tight text-black">
+      <div className="mb-6">
+        <h1 className="text-[36px] font-bold tracking-tight text-black">
           Beranda
         </h1>
 
-        <p className="mt-1 text-[15px] font-semibold text-black">
+        <p className="mt-1 text-[16px] font-semibold text-black">
           Welcome, {namaAdmin}
         </p>
       </div>
@@ -341,20 +336,20 @@ export default function BerandaPage() {
             STATISTIK
         ================================================= */}
 
-        <section className="min-h-[310px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-5">
+        <section className="min-h-[330px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-[12px] font-medium text-gray-900">
+            <h2 className="text-[16px] font-semibold text-gray-900">
               Statistik
             </h2>
 
-            <div className="flex items-center gap-1.5 text-[10px] text-gray-900">
-              <span className="h-1.5 w-1.5 rounded-full bg-gray-900" />
+            <div className="flex items-center gap-1.5 text-[12px] text-gray-900">
+              <span className="h-2 w-2 rounded-full bg-gray-900" />
 
               <span>Donor</span>
             </div>
           </div>
 
-          <div className="mt-3 h-[245px]">
+          <div className="mt-3 h-[250px]">
             <ResponsiveContainer
               width="100%"
               height="100%"
@@ -365,7 +360,7 @@ export default function BerandaPage() {
                   top: 10,
                   right: 10,
                   bottom: 0,
-                  left: -12,
+                  left: -8,
                 }}
               >
                 <CartesianGrid
@@ -378,7 +373,7 @@ export default function BerandaPage() {
                   axisLine={false}
                   tickLine={false}
                   tick={{
-                    fontSize: 9,
+                    fontSize: 11,
                     fill: "#777777",
                   }}
                   dy={8}
@@ -390,7 +385,7 @@ export default function BerandaPage() {
                   allowDecimals={false}
                   width={45}
                   tick={{
-                    fontSize: 9,
+                    fontSize: 11,
                     fill: "#888888",
                   }}
                 />
@@ -403,7 +398,7 @@ export default function BerandaPage() {
                     border:
                       "1px solid #eeeeee",
                     borderRadius: "10px",
-                    fontSize: "11px",
+                    fontSize: "13px",
                   }}
                   formatter={(value) => [
                     `${value} donor`,
@@ -430,9 +425,9 @@ export default function BerandaPage() {
             TOTAL STOK DARAH
         ================================================= */}
 
-        <section className="min-h-[310px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-7">
+        <section className="min-h-[330px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-7">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-[12px] font-medium text-gray-900">
+            <h2 className="text-[16px] font-semibold text-gray-900">
               Total Stok Darah Dari Semua Cabang
             </h2>
 
@@ -457,14 +452,14 @@ export default function BerandaPage() {
             DONOR HARI INI
         ================================================= */}
 
-        <section className="min-h-[300px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-5">
+        <section className="min-h-[320px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-[12px] font-medium text-gray-900">
+            <h2 className="text-[16px] font-semibold text-gray-900">
               Donor Hari Ini
             </h2>
 
             <div className="flex items-center gap-4">
-              <span className="hidden text-[10px] text-gray-400 sm:block">
+              <span className="hidden text-[12px] text-gray-400 sm:block">
                 {tanggalHariIni}
               </span>
 
@@ -474,8 +469,8 @@ export default function BerandaPage() {
 
           {donorHariIni.length ===
           0 ? (
-            <div className="mt-5 flex h-[190px] items-center justify-center rounded-xl border border-dashed border-gray-200">
-              <p className="text-xs text-gray-400">
+            <div className="mt-5 flex h-[200px] items-center justify-center rounded-xl border border-dashed border-gray-200">
+              <p className="text-sm text-gray-400">
                 Tidak ada jadwal donor
                 hari ini
               </p>
@@ -486,33 +481,33 @@ export default function BerandaPage() {
                 (item) => (
                   <div
                     key={item.id}
-                    className="flex min-h-[105px] overflow-hidden rounded-xl border border-gray-200 bg-white"
+                    className="flex min-h-[115px] overflow-hidden rounded-xl border border-gray-200 bg-white"
                   >
                     {/* CONTENT */}
 
                     <div className="min-w-0 flex-1 p-4">
-                      <p className="text-[10px] font-semibold text-gray-900">
+                      <p className="text-[13px] font-semibold text-gray-900">
                         Donor Hari Ini
                       </p>
 
-                      <p className="mt-0.5 text-[7px] text-gray-400">
+                      <p className="mt-0.5 text-[11px] text-gray-400">
                         {item.tanggal}
                       </p>
 
-                      <p className="mt-3 truncate text-[11px] font-medium text-gray-900">
+                      <p className="mt-3 truncate text-[14px] font-medium text-gray-900">
                         {item.lokasi}
                       </p>
 
-                      <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[8px] text-gray-500">
-                        <MapPin className="h-2.5 w-2.5 shrink-0" />
+                      <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[11px] text-gray-500">
+                        <MapPin className="h-3 w-3 shrink-0" />
 
                         <span className="truncate">
                           {item.alamat}
                         </span>
                       </div>
 
-                      <div className="mt-1 flex items-center gap-1 text-[8px] text-gray-500">
-                        <Clock className="h-2.5 w-2.5 shrink-0" />
+                      <div className="mt-1 flex items-center gap-1 text-[11px] text-gray-500">
+                        <Clock className="h-3 w-3 shrink-0" />
 
                         <span>
                           {item.waktu}
@@ -540,8 +535,8 @@ export default function BerandaPage() {
         <div className="flex flex-col gap-5 xl:col-span-3">
           {/* HARI INI */}
 
-          <section className="flex min-h-[140px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-[12px] font-medium text-gray-900">
+          <section className="flex min-h-[150px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <p className="text-[15px] font-semibold text-gray-900">
               Total Pendonor Hari ini
             </p>
 
@@ -549,15 +544,15 @@ export default function BerandaPage() {
               {totalPendonorHariIni}
             </p>
 
-            <p className="mt-2 text-[10px] text-gray-900">
+            <p className="mt-2 text-[13px] text-gray-900">
               Orang
             </p>
           </section>
 
           {/* BULAN TERAKHIR */}
 
-          <section className="flex min-h-[140px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-[12px] font-medium text-gray-900">
+          <section className="flex min-h-[150px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <p className="text-[15px] font-semibold text-gray-900">
               Total Pendonor 1 Bulan
               Terakhir
             </p>
@@ -566,7 +561,7 @@ export default function BerandaPage() {
               {totalPendonorSebulan}
             </p>
 
-            <p className="mt-2 text-[10px] text-gray-900">
+            <p className="mt-2 text-[13px] text-gray-900">
               Orang
             </p>
           </section>
@@ -576,14 +571,14 @@ export default function BerandaPage() {
             USIA PENDONOR
         ================================================= */}
 
-        <section className="min-h-[300px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-4">
-          <h2 className="text-[12px] font-medium text-gray-900">
+        <section className="min-h-[320px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-4">
+          <h2 className="text-[16px] font-semibold text-gray-900">
             Usia Pendonor
           </h2>
 
           {/* DONUT */}
 
-          <div className="h-[190px]">
+          <div className="h-[195px]">
             <ResponsiveContainer
               width="100%"
               height="100%"
@@ -620,7 +615,7 @@ export default function BerandaPage() {
                     border:
                       "1px solid #eeeeee",
                     borderRadius: "10px",
-                    fontSize: "11px",
+                    fontSize: "13px",
                   }}
                   formatter={(value) => [
                     `${value} orang`,
@@ -638,10 +633,10 @@ export default function BerandaPage() {
               (item, index) => (
                 <li
                   key={item.rentang}
-                  className="flex items-center text-[10px] text-gray-900"
+                  className="flex items-center text-[13px] text-gray-900"
                 >
                   <span
-                    className="mr-2 h-2.5 w-2.5 shrink-0 rounded-full"
+                    className="mr-2 h-3 w-3 shrink-0 rounded-full"
                     style={{
                       backgroundColor:
                         WARNA_DONUT[

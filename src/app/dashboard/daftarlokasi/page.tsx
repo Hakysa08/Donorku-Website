@@ -86,7 +86,7 @@ export default function DaftarLokasiPage() {
   const [pagination, setPagination] =
     useState<Pagination>({
       page: 1,
-      limit: 8,
+      limit: 9,
       total: 0,
       totalPages: 1,
     });
@@ -119,7 +119,7 @@ export default function DaftarLokasiPage() {
           page.toString()
         );
 
-        params.set("limit", "10");
+        params.set("limit", "9");
 
         if (search) {
           params.set(
@@ -363,37 +363,37 @@ export default function DaftarLokasiPage() {
 
             <thead>
               <tr className="border-b border-black-400 text-black">
-
+            
                 <th className="px-6 py-5 text-[14px] font-bold">
                   ID
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Lokasi Donor
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Alamat Lokasi
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Kota
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   No Petugas
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Longitude
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Latitude
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
-                  Aksi
+            
+                <th className="px-4 py-3 text-center text-[14px] font-bold">
+                  Action
                 </th>
               </tr>
             </thead>

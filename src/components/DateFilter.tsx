@@ -30,10 +30,15 @@ export default function DateFilter({
   onChange,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const [bulanAktif, setBulanAktif] = useState<Date>(
     value ?? new Date()
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // saat popover dibuka, sinkronkan bulan yang ditampilkan dengan tanggal terpilih
   useEffect(() => {
@@ -42,9 +47,9 @@ export default function DateFilter({
     }
   }, [open, value]);
 
-  const label = format(value ?? new Date(), "d MMMM yyyy", {
-    locale: id,
-  });
+  const label = mounted
+    ? format(value ?? new Date(), "d MMMM yyyy", { locale: id })
+    : "";
 
   const awalGrid = startOfWeek(
     startOfMonth(bulanAktif),

@@ -1,25 +1,10 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-import {
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Search,
-  Trash2,
-  X,
-} from "lucide-react";
-
+import { ChevronLeft, ChevronRight, Eye, Search, Trash2, X } from "lucide-react";
 import { format } from "date-fns";
-
 import AskModal from "@/components/AskModal";
 import DateFilter from "@/components/DateFilter";
 
@@ -312,25 +297,23 @@ export default function RiwayatDonorPage() {
   ======================================================= */
 
   return (
-    <div className="w-full px-2 pb-10 pt-6 text-black">
-
+    <div className="min-h-full bg-white px-10 py-7">
       {/* HEADER */}
-      <div className="mb-6 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-        <h1 className="text-[32px] font-bold tracking-tight">
+      <div className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <h1 className="text-[36px] font-bold tracking-tight text-black">
           Riwayat Donor
         </h1>
 
         <div className="flex flex-wrap items-center gap-3">
-
           {/* SEARCH */}
-          <div className="relative w-full sm:w-[260px]">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <div className="flex h-[52px] w-[295px] items-center rounded-2xl border border-gray-200 bg-white px-5 shadow-sm text-black">
+            <Search size={22} strokeWidth={2} className="shrink-0" />
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text"
               placeholder="Cari Disini"
-              className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-11 pr-10 text-sm text-black shadow-sm outline-none transition focus:ring-2 focus:ring-red-100"
+              className="ml-3 min-w-0 flex-1 bg-transparent text-[13px] text-gray-800 outline-none placeholder:text-gray-400"
             />
             {searchInput && (
               <button
@@ -340,9 +323,9 @@ export default function RiwayatDonorPage() {
                   setSearch("");
                   setPage(1);
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black"
+                className="ml-2"
               >
-                <X className="h-4 w-4" />
+                <X size={18} />
               </button>
             )}
           </div>
@@ -361,7 +344,7 @@ export default function RiwayatDonorPage() {
             type="button"
             onClick={eksporCSV}
             disabled={ekspor}
-            className="flex h-11 items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-black shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
+            className="flex h-[52px] items-center gap-2 rounded-2xl border border-gray-200 bg-white px-5 text-[13px] font-medium text-black shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
           >
             <Image
               src="/ekspor/excel.png"
@@ -378,86 +361,91 @@ export default function RiwayatDonorPage() {
       {/* TABLE */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+          <table className="w-full min-w-[1100px] border-collapse text-left text-[13px] text-black">
             <thead>
-              <tr className="border-b border-gray-200 text-black">
-                <th className="px-5 py-4 text-xs font-bold">ID</th>
-                <th className="px-5 py-4 text-xs font-bold">Nama Lengkap</th>
-                <th className="px-5 py-4 text-xs font-bold">Email</th>
-                <th className="px-5 py-4 text-xs font-bold">Golongan darah</th>
-                <th className="px-5 py-4 text-xs font-bold">Jenis Kelamin</th>
-                <th className="px-5 py-4 text-xs font-bold">Umur</th>
-                <th className="px-5 py-4 text-xs font-bold">Tanggal Pendonoran</th>
-                <th className="px-5 py-4 text-xs font-bold">Lokasi Donor</th>
-                <th className="px-5 py-4 text-center text-xs font-bold">Status</th>
-                <th className="px-5 py-4 text-center text-xs font-bold">Action</th>
+              <tr className="border-b border-black-400 text-black">
+                <th className="px-6 py-5 text-[14px] font-bold">ID</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Nama Lengkap</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Email</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Golongan darah</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Jenis Kelamin</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Umur</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Tanggal Pendonoran</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Lokasi Donor</th>
+                <th className="px-4 py-3 text-center text-[14px] font-bold">Status</th>
+                <th className="px-4 py-3 text-center text-[14px] font-bold">Action</th>
               </tr>
             </thead>
 
             <tbody>
-              {loading ? (
+              {loading &&
+                Array.from({ length: 9 }).map((_, index) => (
+                  <tr key={index} className="border-b border-gray-300">
+                    <td colSpan={10} className="h-[49px] px-6">
+                      <div className="h-3 animate-pulse rounded bg-gray-100" />
+                    </td>
+                  </tr>
+                ))}
+
+              {!loading && error && (
                 <tr>
-                  <td colSpan={10} className="px-5 py-16 text-center text-sm text-gray-400">
-                    Memuat data...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td colSpan={10} className="px-5 py-16 text-center text-sm text-red-500">
+                  <td colSpan={10} className="px-6 py-16 text-center text-red-500">
                     {error}
                   </td>
                 </tr>
-              ) : riwayat.length === 0 ? (
+              )}
+
+              {!loading && !error && riwayat.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-5 py-16 text-center text-sm text-gray-400">
+                  <td colSpan={10} className="px-6 py-16 text-center text-gray-400">
                     Data riwayat donor tidak ditemukan
                   </td>
                 </tr>
-              ) : (
+              )}
+
+              {!loading &&
+                !error &&
                 riwayat.map((item) => (
                   <tr
                     key={item.id_riwayat}
-                    className="border-b border-gray-200 text-black transition last:border-b-0 hover:bg-gray-50"
+                    className="border-b border-black-300 last:border-b-0"
                   >
-                    <td className="whitespace-nowrap px-5 py-4 text-xs font-medium">
-                      {item.id_riwayat}
-                    </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs font-medium">
+                    <td className="px-6 py-5 text-[14px]">{item.id_riwayat}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {item.pendonor.nama_lengkap}
                     </td>
-                    <td className="max-w-[220px] px-5 py-4 text-xs">
+                    <td className="max-w-[220px] px-4 py-3">
                       <div className="truncate" title={item.pendonor.email}>
                         {item.pendonor.email}
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs font-semibold">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {item.pendonor.golongan_darah}
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {formatJenisKelamin(item.pendonor.jenis_kelamin)}
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {hitungUmur(item.pendonor.tanggal_lahir)}
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {formatTanggalPendek(item.tanggal_donor)}
                     </td>
-                    <td className="max-w-[200px] px-5 py-4 text-xs">
+                    <td className="max-w-[200px] px-4 py-3">
                       <div className="truncate" title={item.lokasi_donor}>
                         {item.lokasi_donor}
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-center">
+                    <td className="px-4 py-3 text-center">
                       <span
-                        className={`text-xs font-semibold ${
+                        className={`text-[13px] font-semibold ${
                           STATUS_DONOR_COLOR[item.status_donor] ?? "text-black"
                         }`}
                       >
-                        {STATUS_DONOR_LABEL[item.status_donor] ??
-                          item.status_donor}
+                        {STATUS_DONOR_LABEL[item.status_donor] ?? item.status_donor}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           type="button"
@@ -465,23 +453,22 @@ export default function RiwayatDonorPage() {
                           onClick={() =>
                             router.push(`/dashboard/riwayat/${item.id_riwayat}`)
                           }
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:bg-gray-100"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition hover:bg-gray-100"
                         >
-                          <Eye size={16} />
+                          <Eye size={16} strokeWidth={2} />
                         </button>
                         <button
                           type="button"
                           title="Hapus Riwayat"
                           onClick={() => setTargetHapus(item.id_riwayat)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EC2727] text-white transition hover:brightness-105"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 text-white shadow-sm transition hover:bg-red-500"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={16} strokeWidth={2} />
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
+                ))}
             </tbody>
           </table>
         </div>
@@ -489,58 +476,50 @@ export default function RiwayatDonorPage() {
 
       {/* PAGINATION */}
       {!loading && !error && pagination.total > 0 && (
-        <div className="mt-5 flex items-center justify-between">
-          <p className="text-xs text-gray-500">
-            Menampilkan {riwayat.length} dari {pagination.total} riwayat
-          </p>
+        <div className="mt-5 flex justify-end gap-2">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => setPage((c) => Math.max(1, c - 1))}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
+          >
+            <ChevronLeft size={17} />
+          </button>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={page === 1}
-              onClick={() => setPage((c) => Math.max(1, c - 1))}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
+          {halaman.map((item, index) =>
+            item === "..." ? (
+              <div
+                key={`ellipsis-${index}`}
+                className="flex h-8 min-w-8 items-center justify-center px-1 text-sm text-black"
+              >
+                ...
+              </div>
+            ) : (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setPage(Number(item))}
+                className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm shadow-sm transition ${
+                  page === item
+                    ? "bg-red-600 text-white"
+                    : "border border-gray-200 bg-white hover:bg-gray-100 text-black"
+                }`}
+              >
+                {item}
+              </button>
+            )
+          )}
 
-            {halaman.map((item, index) =>
-              item === "..." ? (
-                <span
-                  key={`e-${index}`}
-                  className="flex h-8 min-w-8 items-center justify-center text-xs"
-                >
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setPage(Number(item))}
-                  className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-xs transition ${
-                    page === item
-                      ? "border-[#EC2727] bg-[#EC2727] text-white"
-                      : "border-gray-200 bg-white text-black hover:bg-gray-50 shadow-sm"
-                  }`}
-                >
-                  {item}
-                </button>
-              )
-            )}
-
-            <button
-              type="button"
-              disabled={page >= pagination.totalPages}
-              onClick={() =>
-                setPage((c) =>
-                  Math.min(pagination.totalPages, c + 1)
-                )
-              }
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            disabled={page >= pagination.totalPages}
+            onClick={() =>
+              setPage((c) => Math.min(pagination.totalPages, c + 1))
+            }
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
+          >
+            <ChevronRight size={17} />
+          </button>
         </div>
       )}
 
@@ -565,10 +544,7 @@ export default function RiwayatDonorPage() {
    EKSPOR CSV
 ========================================================= */
 
-function unduhCSV(
-  baris: (string | number)[][],
-  namaFile: string
-) {
+function unduhCSV(baris: (string | number)[][], namaFile: string) {
   const konten = baris
     .map((kolom) =>
       kolom
@@ -601,15 +577,11 @@ function unduhCSV(
    PAGINATION HELPER
 ========================================================= */
 
-function buatNomorHalaman(
-  current: number,
-  total: number
-): (number | "...")[] {
+function buatNomorHalaman(current: number, total: number): (number | "...")[] {
   if (total <= 5) {
     return Array.from({ length: total }, (_, i) => i + 1);
   }
   if (current <= 3) return [1, 2, 3, "...", total];
-  if (current >= total - 2)
-    return [1, "...", total - 2, total - 1, total];
+  if (current >= total - 2) return [1, "...", total - 2, total - 1, total];
   return [1, "...", current - 1, current, current + 1, "...", total];
 }

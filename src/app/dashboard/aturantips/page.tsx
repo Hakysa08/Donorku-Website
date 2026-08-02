@@ -313,25 +313,25 @@ export default function AturanTipsPage() {
   ======================================================= */
 
   return (
-    <div className="w-full px-6 pb-10 pt-7">
+  <div className="min-h-full bg-white px-10 py-7">
 
-      {/* ===================================================
-          HEADER
-      =================================================== */}
+    {/* ===================================================
+        HEADER
+    =================================================== */}
 
-      <div className="mb-6 flex items-center justify-between gap-5">
+    <div className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
 
-        <h1 className="text-[32px] font-bold tracking-tight text-black">
-          Aturan &amp; Tips
-        </h1>
+      <h1 className="text-[36px] font-bold tracking-tight text-black">
+        Aturan &amp; Tips
+      </h1>
 
-        <Link
-          href="/dashboard/aturantips/tambah"
-          className="flex h-[52px] items-center justify-center rounded-lg bg-[#EC2727] px-7 text-sm font-bold text-white shadow-sm transition-colors duration-200 hover:bg-[#d31f1f]"
-        >
-          Tambah Aturan /Tips Baru
-        </Link>
-      </div>
+      <Link
+        href="/dashboard/aturantips/tambah"
+        className="flex h-[52px] items-center justify-center rounded-lg bg-[#EC2727] px-7 text-sm font-bold text-white shadow-sm transition-colors duration-200 hover:bg-[#d31f1f]"
+      >
+        Tambah Aturan /Tips Baru
+      </Link>
+    </div>
 
       {/* ===================================================
           TABLE CONTAINER
@@ -339,7 +339,7 @@ export default function AturanTipsPage() {
 
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+          <table className="w-full min-w-[1100px] border-collapse text-left">
 
             <thead>
               <tr className="border-b border-gray-400 text-black">
@@ -364,7 +364,7 @@ export default function AturanTipsPage() {
                 </th>
 
                 <th className="px-6 py-5 text-center text-base font-bold">
-                  Aksi
+                  Action
                 </th>
               </tr>
             </thead>

@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
       const semua = await prisma.riwayatDonor.findMany({
         where,
         select,
-        orderBy: { tanggal_donor: "desc" },
+        orderBy: { id_riwayat: "desc" },
       });
 
       return NextResponse.json({
@@ -154,7 +154,7 @@ export async function GET(req: NextRequest) {
       prisma.riwayatDonor.findMany({
         where,
         select,
-        orderBy: { tanggal_donor: "desc" },
+        orderBy: { id_riwayat: "desc" },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -164,7 +164,7 @@ export async function GET(req: NextRequest) {
     const tanggalRows = await prisma.riwayatDonor.findMany({
       select: { tanggal_donor: true },
       distinct: ["tanggal_donor"],
-      orderBy: { tanggal_donor: "desc" },
+      orderBy: { id_riwayat: "desc" },
     });
 
     const opsiTanggal = tanggalRows.map((t) =>

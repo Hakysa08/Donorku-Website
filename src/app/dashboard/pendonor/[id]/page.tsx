@@ -272,7 +272,7 @@ export default function DetailPendonorPage({
 
   if (error || !data) {
     return (
-      <div className="w-full px-10 py-7">
+      <div className="min-h-full bg-white px-10 py-7">
         <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
           {error || "Pendonor tidak ditemukan"}
         </div>
@@ -283,11 +283,11 @@ export default function DetailPendonorPage({
   const p = data.pendonor;
 
   return (
-    <div className="w-full px-6 pb-12 pt-6 text-black">
+    <div className="min-h-full bg-white px-10 py-7 text-black">
 
       {/* HEADER */}
       <div className="mb-8 flex items-start justify-between">
-        <h1 className="text-[32px] font-bold leading-tight">
+        <h1 className="text-[36px] font-bold leading-tight">
           Daftar Pendonor
           <br />
           ID {data.id_pendaftaran}
@@ -305,7 +305,7 @@ export default function DetailPendonorPage({
               type="button"
               disabled={ubahLoading}
               onClick={() => setBukaStatus((v) => !v)}
-              className="flex h-10 items-center gap-2 rounded-full bg-[#EC2727] px-5 text-sm font-semibold text-white transition hover:brightness-105 disabled:opacity-60"
+              className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition hover:bg-red-500 disabled:opacity-60"
             >
               Ubah Status
               <ChevronDown
@@ -317,7 +317,7 @@ export default function DetailPendonorPage({
             </button>
 
             {bukaStatus && (
-              <div className="absolute right-0 top-full z-40 mt-2 w-full overflow-hidden rounded-2xl bg-[#EC2727] shadow-lg">
+              <div className="absolute right-0 top-full z-40 mt-2 w-full overflow-hidden rounded-2xl bg-red-600 shadow-lg">
                 <button
                   type="button"
                   onClick={() => ubahStatus("diterima")}
@@ -342,7 +342,7 @@ export default function DetailPendonorPage({
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[300px_1fr]">
 
         {/* FOTO */}
-        <div className="relative h-[280px] w-full overflow-hidden rounded-2xl border border-black bg-gray-50">
+        <div className="relative h-[280px] w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
           <Image
             src={fotoPendonor(p.foto_profil)}
             alt={p.nama_lengkap}
@@ -392,8 +392,7 @@ export default function DetailPendonorPage({
         </div>
       </div>
 
-      {/* DIVIDER (tebal, hitam) */}
-      <hr className="my-8 border-t-2 border-black" />
+      <Divider />
 
       {/* DETAIL DONOR */}
       <div className="mb-6 flex items-center justify-between">
@@ -402,7 +401,7 @@ export default function DetailPendonorPage({
         <button
           type="button"
           onClick={() => setBukaKuesioner(true)}
-          className="flex h-10 items-center gap-2 rounded-full border border-black bg-white px-4 text-sm font-medium text-gray-800 transition hover:bg-gray-50"
+          className="flex h-10 items-center gap-2 rounded-full border border-gray-200 bg-white px-5 text-sm font-medium text-gray-800 transition hover:bg-gray-50"
         >
           Hasil Kuesioner
         </button>
@@ -476,7 +475,17 @@ export default function DetailPendonorPage({
 }
 
 /* =========================================================
+   DIVIDER ANTAR SECTION
+   -> disamakan dengan Divider di Lokasi/Jadwal
+========================================================= */
+
+function Divider() {
+  return <div className="my-9 h-1 w-full rounded-full bg-gray-400" />;
+}
+
+/* =========================================================
    DETAIL ITEM
+   -> disamakan persis dengan DetailItem di Lokasi/Jadwal
 ========================================================= */
 
 function DetailItem({
@@ -488,8 +497,8 @@ function DetailItem({
 }) {
   return (
     <div className="min-w-0">
-      <p className="mb-1 text-sm text-gray-400">{label}</p>
-      <p className="break-words text-lg font-bold text-gray-900">
+      <p className="text-sm text-gray-600">{label}</p>
+      <p className="mt-1 break-words text-lg font-semibold text-gray-900">
         {value}
       </p>
     </div>
@@ -511,11 +520,11 @@ function Pilihan({
     <span className="flex items-center gap-1.5">
       <span
         className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-          aktif ? "border-[#EC2727]" : "border-gray-300"
+          aktif ? "border-red-600" : "border-gray-300"
         }`}
       >
         {aktif && (
-          <span className="h-2 w-2 rounded-full bg-[#EC2727]" />
+          <span className="h-2 w-2 rounded-full bg-red-600" />
         )}
       </span>
       <span className="text-xs text-gray-600">{label}</span>

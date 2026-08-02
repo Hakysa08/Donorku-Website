@@ -120,7 +120,7 @@ export default function JadwalDonorPage() {
   const [pagination, setPagination] =
     useState<Pagination>({
       page: 1,
-      limit: 8,
+      limit: 9,
       total: 0,
       totalPages: 1,
     });
@@ -162,7 +162,7 @@ export default function JadwalDonorPage() {
       const params = new URLSearchParams();
 
       params.set("page", String(page));
-      params.set("limit", "10");
+      params.set("limit", "9");
 
       if (search) {
         params.set("search", search);
@@ -403,40 +403,40 @@ export default function JadwalDonorPage() {
 
             <thead>
               <tr className="border-b border-black-400 text-black">
-
+            
                 <th className="px-6 py-5 text-[14px] font-bold">
                   ID
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Tanggal
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Kuota
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Waktu Mulai
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Waktu Selesai
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Lokasi Donor
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Alamat Lokasi
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-[14px] font-bold">
                   Penyelenggara
                 </th>
-
-                <th className="px-6 py-5 text-[14px] font-bold">
+            
+                <th className="px-4 py-3 text-center text-[14px] font-bold">
                   Action
                 </th>
               </tr>

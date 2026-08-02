@@ -279,7 +279,7 @@ export default function DetailRiwayatPage({
 
   if (error || !data) {
     return (
-      <div className="w-full px-10 py-7">
+      <div className="min-h-full bg-white px-10 py-7">
         <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
           {error || "Riwayat donor tidak ditemukan"}
         </div>
@@ -290,11 +290,11 @@ export default function DetailRiwayatPage({
   const p = data.pendonor;
 
   return (
-    <div className="w-full px-6 pb-12 pt-6 text-black">
+    <div className="min-h-full bg-white px-10 py-7 text-black">
 
       {/* HEADER */}
       <div className="mb-8 flex items-start justify-between">
-        <h1 className="text-[32px] font-bold leading-tight">
+        <h1 className="text-[36px] font-bold leading-tight">
           Riwayat Donor
           <br />
           ID {data.id_riwayat}
@@ -311,7 +311,7 @@ export default function DetailRiwayatPage({
               type="button"
               disabled={ubahLoading}
               onClick={() => setBukaStatus((v) => !v)}
-              className="flex h-10 items-center gap-2 rounded-full bg-[#EC2727] px-5 text-sm font-semibold text-white transition hover:brightness-105 disabled:opacity-60"
+              className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition hover:bg-red-500 disabled:opacity-60"
             >
               Ubah Status
               <ChevronDown
@@ -324,7 +324,7 @@ export default function DetailRiwayatPage({
             </button>
 
             {bukaStatus && (
-              <div className="absolute right-0 top-full z-40 mt-2 w-full overflow-hidden rounded-2xl bg-[#EC2727] shadow-lg">
+              <div className="absolute right-0 top-full z-40 mt-2 w-full overflow-hidden rounded-2xl bg-red-600 shadow-lg">
                 <button
                   type="button"
                   onClick={() => ubahStatus("berhasil")}
@@ -356,7 +356,7 @@ export default function DetailRiwayatPage({
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[300px_1fr]">
 
         {/* FOTO */}
-        <div className="relative h-[280px] w-full overflow-hidden rounded-2xl border border-black bg-gray-50">
+        <div className="relative h-[280px] w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
           <Image
             src={fotoPendonor(p.foto_profil)}
             alt={p.nama_lengkap}
@@ -366,7 +366,7 @@ export default function DetailRiwayatPage({
           />
         </div>
 
-        {/* DETAIL PENDONOR (polos, tanpa kotak) */}
+        {/* DETAIL PENDONOR */}
         <div>
           <h2 className="mb-6 text-xl font-bold text-gray-900">
             Detail Pendonor
@@ -397,8 +397,7 @@ export default function DetailRiwayatPage({
         </div>
       </div>
 
-      {/* DIVIDER (tebal, hitam) */}
-      <hr className="my-8 border-t-2 border-black" />
+      <Divider />
 
       {/* DETAIL DONOR */}
       <h2 className="mb-6 text-xl font-bold text-gray-900">
@@ -418,9 +417,9 @@ export default function DetailRiwayatPage({
 
         {/* STATUS */}
         <div className="min-w-0">
-          <p className="mb-1 text-sm text-gray-400">Status</p>
+          <p className="text-sm text-gray-600">Status</p>
           <p
-            className={`break-words text-lg font-bold ${STATUS_COLOR[data.status_donor]}`}
+            className={`mt-1 break-words text-lg font-semibold ${STATUS_COLOR[data.status_donor]}`}
           >
             {STATUS_LABEL[data.status_donor]}
           </p>
@@ -431,12 +430,12 @@ export default function DetailRiwayatPage({
           <button
             type="button"
             onClick={bukaModalDarah}
-            className="mb-1 flex items-center gap-1 text-sm text-gray-400 transition hover:text-red-600"
+            className="flex items-center gap-1 text-sm text-gray-600 transition hover:text-red-600"
           >
             Darah Terkumpul
             <ArrowRight size={14} />
           </button>
-          <p className="break-words text-lg font-bold text-gray-900">
+          <p className="mt-1 break-words text-lg font-semibold text-gray-900">
             {data.darah_terkumpul
               ? `${data.darah_terkumpul}ml`
               : "-"}
@@ -485,7 +484,7 @@ export default function DetailRiwayatPage({
                 type="button"
                 onClick={simpanDarahTerkumpul}
                 disabled={simpanDarah}
-                className="flex-1 rounded-xl bg-[#EC2727] py-3 font-semibold text-white shadow-sm transition hover:brightness-105 disabled:opacity-60"
+                className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white shadow-sm transition hover:bg-red-500 disabled:opacity-60"
               >
                 {simpanDarah ? "Menyimpan..." : "Simpan"}
               </button>
@@ -506,7 +505,17 @@ export default function DetailRiwayatPage({
 }
 
 /* =========================================================
+   DIVIDER ANTAR SECTION
+   -> disamakan dengan Divider di Lokasi/Jadwal/Pendonor
+========================================================= */
+
+function Divider() {
+  return <div className="my-9 h-1 w-full rounded-full bg-gray-400" />;
+}
+
+/* =========================================================
    DETAIL ITEM
+   -> disamakan persis dengan DetailItem di Lokasi/Jadwal/Pendonor
 ========================================================= */
 
 function DetailItem({
@@ -518,8 +527,8 @@ function DetailItem({
 }) {
   return (
     <div className="min-w-0">
-      <p className="mb-1 text-sm text-gray-400">{label}</p>
-      <p className="break-words text-lg font-bold text-gray-900">
+      <p className="text-sm text-gray-600">{label}</p>
+      <p className="mt-1 break-words text-lg font-semibold text-gray-900">
         {value}
       </p>
     </div>

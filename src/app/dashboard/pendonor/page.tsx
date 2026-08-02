@@ -1,24 +1,9 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Search,
-  X,
-} from "lucide-react";
-
+import { ChevronDown, ChevronLeft, ChevronRight, Eye, Search, X } from "lucide-react";
 import { format } from "date-fns";
-
 import DateFilter from "@/components/DateFilter";
 
 /* =========================================================
@@ -67,7 +52,6 @@ function formatJenisKelamin(nilai: string): string {
   return nilai;
 }
 
-/* Tanggal pendonoran -> dd/mm/yyyy (sesuai Figma) */
 function formatTanggalPendek(iso?: string | null): string {
   if (!iso) return "-";
   const t = new Date(iso);
@@ -100,34 +84,13 @@ function hitungUmur(iso?: string | null): number | string {
    STATUS BADGE
 ========================================================= */
 
-const STATUS_INFO: Record<
-  StatusPendaftaran,
-  { label: string; kelas: string }
-> = {
-  menunggu: {
-    label: "Menunggu",
-    kelas: "bg-[#F4D53E] text-[#4A3B00]",
-  },
-  diterima: {
-    label: "Diterima",
-    kelas: "bg-[#4CD471] text-white",
-  },
-  ditolak: {
-    label: "Ditolak",
-    kelas: "bg-[#F0453C] text-white",
-  },
-  dibatalkan: {
-    label: "Dibatalkan",
-    kelas: "bg-[#9AA0A6] text-white",
-  },
-  selesai: {
-    label: "Selesai",
-    kelas: "bg-[#3B82F6] text-white",
-  },
-  batal_hadir: {
-    label: "Batal Hadir",
-    kelas: "bg-[#9AA0A6] text-white",
-  },
+const STATUS_INFO: Record<StatusPendaftaran, { label: string; kelas: string }> = {
+  menunggu: { label: "Menunggu", kelas: "bg-[#F4D53E] text-[#4A3B00]" },
+  diterima: { label: "Diterima", kelas: "bg-[#4CD471] text-white" },
+  ditolak: { label: "Ditolak", kelas: "bg-[#F0453C] text-white" },
+  dibatalkan: { label: "Dibatalkan", kelas: "bg-[#9AA0A6] text-white" },
+  selesai: { label: "Selesai", kelas: "bg-[#3B82F6] text-white" },
+  batal_hadir: { label: "Batal Hadir", kelas: "bg-[#9AA0A6] text-white" },
 };
 
 function BadgeStatus({ status }: { status: StatusPendaftaran }) {
@@ -244,35 +207,30 @@ export default function DaftarPendonorPage() {
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  const halaman = buatNomorHalaman(
-    pagination.page,
-    pagination.totalPages
-  );
+  const halaman = buatNomorHalaman(pagination.page, pagination.totalPages);
 
   /* =======================================================
      RENDER
   ======================================================= */
 
   return (
-    <div className="w-full px-2 pb-10 pt-6 text-black">
-
+    <div className="min-h-full bg-white px-10 py-7">
       {/* HEADER */}
-      <div className="mb-6 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-        <h1 className="text-[32px] font-bold tracking-tight">
+      <div className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <h1 className="text-[36px] font-bold tracking-tight text-black">
           Daftar Pendonor
         </h1>
 
         <div className="flex flex-wrap items-center gap-3">
-
           {/* SEARCH */}
-          <div className="relative w-full sm:w-[260px]">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <div className="flex h-[52px] w-[295px] items-center rounded-2xl border border-gray-200 bg-white px-5 shadow-sm text-black">
+            <Search size={22} strokeWidth={2} className="shrink-0" />
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text"
               placeholder="Cari Disini"
-              className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-11 pr-10 text-sm text-black shadow-sm outline-none transition focus:ring-2 focus:ring-red-100"
+              className="ml-3 min-w-0 flex-1 bg-transparent text-[13px] text-gray-800 outline-none placeholder:text-gray-400"
             />
             {searchInput && (
               <button
@@ -282,9 +240,9 @@ export default function DaftarPendonorPage() {
                   setSearch("");
                   setPage(1);
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black"
+                className="ml-2"
               >
-                <X className="h-4 w-4" />
+                <X size={18} />
               </button>
             )}
           </div>
@@ -306,7 +264,7 @@ export default function DaftarPendonorPage() {
                 setLokasi(e.target.value);
                 setPage(1);
               }}
-              className="h-11 w-[170px] cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white pl-4 pr-9 text-sm text-black shadow-sm outline-none transition focus:ring-2 focus:ring-red-100"
+              className="h-[52px] w-[190px] cursor-pointer appearance-none rounded-2xl border border-gray-200 bg-white pl-5 pr-9 text-[13px] text-black shadow-sm outline-none"
             >
               <option value="">Lokasi Donor</option>
               {opsi.lokasi.map((l) => (
@@ -315,7 +273,7 @@ export default function DaftarPendonorPage() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           </div>
         </div>
       </div>
@@ -323,79 +281,85 @@ export default function DaftarPendonorPage() {
       {/* TABLE */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+          <table className="w-full min-w-[1100px] border-collapse text-left text-[13px] text-black">
             <thead>
-              <tr className="border-b border-gray-200 text-black">
-                <th className="px-5 py-4 text-xs font-bold">ID</th>
-                <th className="px-5 py-4 text-xs font-bold">Nama Lengkap</th>
-                <th className="px-5 py-4 text-xs font-bold">Email</th>
-                <th className="px-5 py-4 text-xs font-bold">Golongan darah</th>
-                <th className="px-5 py-4 text-xs font-bold">Jenis Kelamin</th>
-                <th className="px-5 py-4 text-xs font-bold">Umur</th>
-                <th className="px-5 py-4 text-xs font-bold">Tanggal Pendonoran</th>
-                <th className="px-5 py-4 text-xs font-bold">Lokasi Donor</th>
-                <th className="px-5 py-4 text-center text-xs font-bold">Status</th>
-                <th className="px-5 py-4 text-center text-xs font-bold">Action</th>
+              <tr className="border-b border-black-400 text-black">
+                <th className="px-6 py-5 text-[14px] font-bold">ID</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Nama Lengkap</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Email</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Golongan darah</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Jenis Kelamin</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Umur</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Tanggal Pendonoran</th>
+                <th className="px-4 py-3 text-[14px] font-bold">Lokasi Donor</th>
+                <th className="px-4 py-3 text-center text-[14px] font-bold">Status</th>
+                <th className="px-4 py-3 text-center text-[14px] font-bold">Action</th>
               </tr>
             </thead>
 
             <tbody>
-              {loading ? (
+              {loading &&
+                Array.from({ length: 9 }).map((_, index) => (
+                  <tr key={index} className="border-b border-gray-300">
+                    <td colSpan={10} className="h-[49px] px-6">
+                      <div className="h-3 animate-pulse rounded bg-gray-100" />
+                    </td>
+                  </tr>
+                ))}
+
+              {!loading && error && (
                 <tr>
-                  <td colSpan={10} className="px-5 py-16 text-center text-sm text-gray-400">
-                    Memuat data...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td colSpan={10} className="px-5 py-16 text-center text-sm text-red-500">
+                  <td colSpan={10} className="px-6 py-16 text-center text-red-500">
                     {error}
                   </td>
                 </tr>
-              ) : baris.length === 0 ? (
+              )}
+
+              {!loading && !error && baris.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-5 py-16 text-center text-sm text-gray-400">
+                  <td colSpan={10} className="px-6 py-16 text-center text-gray-400">
                     Data pendaftaran tidak ditemukan
                   </td>
                 </tr>
-              ) : (
+              )}
+
+              {!loading &&
+                !error &&
                 baris.map((item) => (
                   <tr
                     key={item.id}
-                    className="border-b border-gray-200 text-black transition last:border-b-0 hover:bg-gray-50"
+                    className="border-b border-black-300 last:border-b-0"
                   >
-                    <td className="whitespace-nowrap px-5 py-4 text-xs font-medium">
-                      {item.id}
-                    </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs font-medium">
+                    <td className="px-6 py-5 text-[14px]">{item.id}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {item.nama_lengkap}
                     </td>
-                    <td className="max-w-[220px] px-5 py-4 text-xs">
+                    <td className="max-w-[220px] px-4 py-3">
                       <div className="truncate" title={item.email}>
                         {item.email}
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs font-semibold">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {item.golongan_darah}
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {formatJenisKelamin(item.jenis_kelamin)}
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {hitungUmur(item.tanggal_lahir)}
                     </td>
-                    <td className="whitespace-nowrap px-5 py-4 text-xs">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {formatTanggalPendek(item.tanggal_pendonoran)}
                     </td>
-                    <td className="max-w-[180px] px-5 py-4 text-xs">
+                    <td className="max-w-[180px] px-4 py-3">
                       <div className="truncate" title={item.lokasi_donor}>
                         {item.lokasi_donor}
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-center">
+                    <td className="px-4 py-3 text-center">
                       <BadgeStatus status={item.status} />
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center justify-center">
                         <button
                           type="button"
@@ -403,15 +367,14 @@ export default function DaftarPendonorPage() {
                           onClick={() =>
                             router.push(`/dashboard/pendonor/${item.id}`)
                           }
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:bg-gray-100"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition hover:bg-gray-100"
                         >
-                          <Eye size={16} />
+                          <Eye size={16} strokeWidth={2} />
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
+                ))}
             </tbody>
           </table>
         </div>
@@ -419,58 +382,50 @@ export default function DaftarPendonorPage() {
 
       {/* PAGINATION */}
       {!loading && !error && pagination.total > 0 && (
-        <div className="mt-5 flex items-center justify-between">
-          <p className="text-xs text-gray-500">
-            Menampilkan {baris.length} dari {pagination.total} pendaftaran
-          </p>
+        <div className="mt-5 flex justify-end gap-2">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => setPage((c) => Math.max(1, c - 1))}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
+          >
+            <ChevronLeft size={17} />
+          </button>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={page === 1}
-              onClick={() => setPage((c) => Math.max(1, c - 1))}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
+          {halaman.map((item, index) =>
+            item === "..." ? (
+              <div
+                key={`ellipsis-${index}`}
+                className="flex h-8 min-w-8 items-center justify-center px-1 text-sm text-black"
+              >
+                ...
+              </div>
+            ) : (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setPage(Number(item))}
+                className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm shadow-sm transition ${
+                  page === item
+                    ? "bg-red-600 text-white"
+                    : "border border-gray-200 bg-white hover:bg-gray-100 text-black"
+                }`}
+              >
+                {item}
+              </button>
+            )
+          )}
 
-            {halaman.map((item, index) =>
-              item === "..." ? (
-                <span
-                  key={`e-${index}`}
-                  className="flex h-8 min-w-8 items-center justify-center text-xs"
-                >
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setPage(Number(item))}
-                  className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-xs transition ${
-                    page === item
-                      ? "border-[#EC2727] bg-[#EC2727] text-white"
-                      : "border-gray-200 bg-white text-black hover:bg-gray-50 shadow-sm"
-                  }`}
-                >
-                  {item}
-                </button>
-              )
-            )}
-
-            <button
-              type="button"
-              disabled={page >= pagination.totalPages}
-              onClick={() =>
-                setPage((c) =>
-                  Math.min(pagination.totalPages, c + 1)
-                )
-              }
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            disabled={page >= pagination.totalPages}
+            onClick={() =>
+              setPage((c) => Math.min(pagination.totalPages, c + 1))
+            }
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
+          >
+            <ChevronRight size={17} />
+          </button>
         </div>
       )}
     </div>
@@ -481,15 +436,11 @@ export default function DaftarPendonorPage() {
    PAGINATION HELPER
 ========================================================= */
 
-function buatNomorHalaman(
-  current: number,
-  total: number
-): (number | "...")[] {
+function buatNomorHalaman(current: number, total: number): (number | "...")[] {
   if (total <= 5) {
     return Array.from({ length: total }, (_, i) => i + 1);
   }
   if (current <= 3) return [1, 2, 3, "...", total];
-  if (current >= total - 2)
-    return [1, "...", total - 2, total - 1, total];
+  if (current >= total - 2) return [1, "...", total - 2, total - 1, total];
   return [1, "...", current - 1, current, current + 1, "...", total];
 }

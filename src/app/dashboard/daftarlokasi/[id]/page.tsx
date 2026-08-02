@@ -120,7 +120,7 @@ export default function DetailLokasiPage({
 
   if (error || !lokasi) {
     return (
-      <div className="w-full px-10 py-7">
+      <div className="min-h-full bg-white px-10 py-7">
         <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
           {error || "Lokasi tidak ditemukan"}
         </div>
@@ -137,10 +137,10 @@ export default function DetailLokasiPage({
   ======================================================= */
 
   return (
-    <div className="w-full px-10 pb-10 pt-6 text-black">
+    <div className="min-h-full bg-white px-10 py-7 text-black">
       {/* HEADER: judul kiri (2 baris), tombol Kembali + Edit kanan, sejajar */}
-      <div className="mb-6 flex items-start justify-between">
-        <h1 className="text-4xl font-bold leading-tight text-gray-900">
+      <div className="mb-8 flex items-start justify-between">
+        <h1 className="text-[36px] font-bold leading-tight text-gray-900">
           Detail Lokasi
           <br />
           ID {lokasi.id_lokasi}
@@ -219,7 +219,7 @@ export default function DetailLokasiPage({
             />
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">
             <DetailItem
               label="Longitude"
               value={
@@ -271,4 +271,3 @@ export default function DetailLokasiPage({
     </div>
   );
 }
-  

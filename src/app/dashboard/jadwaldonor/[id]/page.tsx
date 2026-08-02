@@ -74,19 +74,20 @@ function formatAngka(value: number | null | undefined) {
 
 /* =========================================================
    DETAIL ITEM (label di atas, value bold di bawah)
+   -> disamakan persis dengan DetailItem di halaman Lokasi
 ========================================================= */
 
 function DetailItem({
   label,
   value,
 }: {
-  label: string;
+  label: React.ReactNode;
   value: React.ReactNode;
 }) {
   return (
     <div>
-      <p className="text-base text-black">{label}</p>
-      <p className="mt-1 text-xl font-bold text-gray-900">{value}</p>
+      <p className="text-sm text-gray-600">{label}</p>
+      <p className="mt-1 text-lg font-semibold text-gray-900">{value}</p>
     </div>
   );
 }
@@ -198,8 +199,8 @@ export default function DetailJadwalPage() {
   return (
     <div className="min-h-full bg-white px-10 py-7 text-black">
       {/* HEADER */}
-      <div className="mb-9 flex items-start justify-between">
-        <h1 className="text-[43px] font-bold leading-tight tracking-tight">
+      <div className="mb-8 flex items-start justify-between">
+        <h1 className="text-[36px] font-bold leading-tight tracking-tight">
           Jadwal Donor
           <br />
           ID {id}
@@ -214,85 +215,87 @@ export default function DetailJadwalPage() {
             onClick={() =>
               router.push(`/dashboard/jadwaldonor/${id}/edit`)
             }
-            className="flex h-[53px] items-center gap-2 rounded-full bg-red-600 px-7 text-base font-semibold text-white hover:bg-red-500"
+            className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white hover:bg-red-500"
           >
-            <Pencil size={19} />
+            <Pencil size={16} />
             Edit
           </button>
         </div>
       </div>
 
       {/* FOTO + DETAIL JADWAL */}
-      <div className="flex flex-col gap-8 lg:flex-row">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[300px_1fr]">
         {/* FOTO CAROUSEL */}
-        <div className="group relative aspect-square w-full shrink-0 overflow-hidden rounded-2xl border border-gray-500 bg-gray-50 lg:w-80">
-          {fotoArray.length > 0 ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={fotoArray[fotoIndex]}
-                alt={data.lokasi.nama_lokasi}
-                className="h-full w-full object-cover"
-              />
+        <div>
+          <div className="group relative h-[280px] w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
+            {fotoArray.length > 0 ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={fotoArray[fotoIndex]}
+                  alt={data.lokasi.nama_lokasi}
+                  className="h-full w-full object-cover"
+                />
 
-              {fotoArray.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={fotoSebelumnya}
-                    title="Foto sebelumnya"
-                    className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow hover:bg-white"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
+                {fotoArray.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={fotoSebelumnya}
+                      title="Foto sebelumnya"
+                      className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow hover:bg-white"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={fotoBerikutnya}
-                    title="Foto berikutnya"
-                    className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow hover:bg-white"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={fotoBerikutnya}
+                      title="Foto berikutnya"
+                      className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow hover:bg-white"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
 
-                  <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-                    {fotoArray.map((_, i) => (
-                      <span
-                        key={i}
-                        className={`h-1.5 rounded-full transition-all ${
-                          i === fotoIndex
-                            ? "w-4 bg-white"
-                            : "w-1.5 bg-white/60"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
+                    <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+                      {fotoArray.map((_, i) => (
+                        <span
+                          key={i}
+                          className={`h-1.5 rounded-full transition-all ${
+                            i === fotoIndex
+                              ? "w-4 bg-white"
+                              : "w-1.5 bg-white/60"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
 
-              <button
-                type="button"
-                onClick={() => setShowModal(true)}
-                title="Perbesar foto"
-                className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow hover:bg-white"
-              >
-                <Maximize2 size={14} />
-              </button>
-            </>
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-base text-gray-400">
-              Belum ada foto
-            </div>
-          )}
+                <button
+                  type="button"
+                  onClick={() => setShowModal(true)}
+                  title="Perbesar foto"
+                  className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow hover:bg-gray-50"
+                >
+                  <Maximize2 size={16} className="text-gray-700" />
+                </button>
+              </>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
+                Belum ada foto
+              </div>
+            )}
+          </div>
         </div>
 
         {/* DETAIL JADWAL */}
-        <div className="flex-1">
-          <h2 className="mb-5 text-xl font-bold text-gray-900">
+        <div>
+          <h2 className="mb-6 text-xl font-bold text-gray-900">
             Detail Jadwal
           </h2>
 
-          <div className="grid grid-cols-1 gap-x-10 gap-y-7 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">
             <DetailItem
               label="Tanggal"
               value={formatTanggal(data.tanggal_pelaksanaan)}
@@ -313,7 +316,7 @@ export default function DetailJadwalPage() {
               value={formatHari(data.tanggal_pelaksanaan)}
             />
 
-            <div className="sm:col-span-3">
+            <div className="md:col-span-3">
               <DetailItem label="Alamat Lokasi" value={data.lokasi.alamat} />
             </div>
           </div>
@@ -323,9 +326,9 @@ export default function DetailJadwalPage() {
       <Divider />
 
       {/* DETAIL DONOR */}
-      <h2 className="mb-5 text-xl font-bold text-gray-900">Detail Donor</h2>
+      <h2 className="mb-6 text-xl font-bold text-gray-900">Detail Donor</h2>
 
-      <div className="grid grid-cols-2 gap-x-10 gap-y-7 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
         <DetailItem
           label="Kuota Maksimal"
           value={formatAngka(data.kuota)}
@@ -357,11 +360,11 @@ export default function DetailJadwalPage() {
       <Divider />
 
       {/* PENANGGUNG JAWAB */}
-      <h2 className="mb-5 text-xl font-bold text-gray-900">
+      <h2 className="mb-6 text-xl font-bold text-gray-900">
         Penanggung Jawab
       </h2>
 
-      <div className="flex flex-col gap-y-7 sm:flex-row sm:gap-x-16">
+      <div className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">
         <DetailItem
           label="Nama"
           value={data.nama_penanggung_jawab ?? "-"}
