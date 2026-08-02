@@ -20,6 +20,8 @@ import {
   X,
 } from "lucide-react";
 
+import AskModal from "@/components/AskModal";
+
 /* =========================================================
    TYPE
 ========================================================= */
@@ -609,7 +611,7 @@ export default function DaftarLokasiPage() {
                   )
                 )
               }
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
             >
               <ChevronRight size={17} />
             </button>
@@ -620,55 +622,16 @@ export default function DaftarLokasiPage() {
           DELETE MODAL
       =================================================== */}
 
-      {deleteId !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-
-          <div className="w-full max-w-[400px] rounded-2xl bg-white p-6 shadow-xl">
-
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
-              <img src="/popup-card/tanya.png" alt="" className="h-6 w-6 text-red-500"/>
-            </div>
-
-            <h2 className="mt-4 text-center text-black font-bold">
-              Konfirmasi Hapus
-            </h2>
-
-            <p className="mt-2 text-center text-sm leading-6 text-gray-500">
-              Apakah Anda yakin ingin Menghapus Data?
-            </p>
-
-            <div className="mt-6 flex gap-3">
-
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={
-                  hapusLokasi
-                }
-                className="h-11 flex-1 rounded-xl bg-red-500 font-medium text-white transition hover:bg-red-600 disabled:opacity-50"
-              >
-                {deleting
-                  ? "Menghapus..."
-                  : "Hapus"}
-              </button>
-              
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={() =>
-                  setDeleteId(
-                    null
-                  )
-                }
-                className="h-11 flex-1 rounded-xl border border-gray-200 font-medium transition text-black hover:bg-gray-50"
-              >
-                Batal
-              </button>
-
-            </div>
-          </div>
-        </div>
-      )}
+      <AskModal
+        isOpen={deleteId !== null}
+        variant="tanya"
+        title="Konfirmasi Hapus"
+        description="Apakah anda yakin ingin mengahapus data?"
+        buttonLabel={deleting ? "Menghapus..." : "Hapus"}
+        cancelLabel="Batal"
+        onClose={() => setDeleteId(null)}
+        onConfirm={hapusLokasi}
+      />
     </div>
   );
 }

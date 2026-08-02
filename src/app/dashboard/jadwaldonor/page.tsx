@@ -671,7 +671,7 @@ export default function JadwalDonorPage() {
                 )
               )
             }
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40 text-black"
           >
             <ChevronRight size={17} />
           </button>

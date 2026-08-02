@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft, Eye, Save, Trash2, X } from "lucide-react";
 
+import AskModal from "@/components/AskModal";
+
 type Lokasi = {
   id_lokasi: number;
   nama_lokasi: string;
@@ -87,6 +89,10 @@ export default function EditLokasiPage({
 
   // modal preview foto (lightbox)
   const [showLightbox, setShowLightbox] = useState(false);
+
+  // modal konfirmasi aksi
+  const [showKonfirmasiEdit, setShowKonfirmasiEdit] = useState(false);
+  const [showKonfirmasiKembali, setShowKonfirmasiKembali] = useState(false);
 
   /* =====================================================
      AMBIL DATA
@@ -191,15 +197,21 @@ export default function EditLokasiPage({
   const fotoDitampilkan = preview ?? fotoLama;
 
   /* =====================================================
-     SUBMIT
+     SUBMIT: form munculin modal "Konfirmasi Edit" dulu,
+     proses simpan sebenarnya ada di prosesEdit()
   ===================================================== */
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
+    setShowKonfirmasiEdit(true);
+  }
 
+  async function prosesEdit() {
     try {
       setSaving(true);
       setError("");
+      setShowKonfirmasiEdit(false);
 
       const formData = new FormData();
 
@@ -233,7 +245,8 @@ export default function EditLokasiPage({
         );
       }
 
-      router.push(`/dashboard/daftarlokasi/${id}`);
+      // setelah sukses -> ke halaman Daftar Lokasi (list), bukan detail/preview
+      router.push("/dashboard/daftarlokasi");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
@@ -266,7 +279,7 @@ export default function EditLokasiPage({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => setShowKonfirmasiKembali(true)}
             className="flex h-[53px] items-center gap-2 rounded-full border border-gray-200 bg-white px-7 text-base font-semibold text-gray-700 hover:bg-gray-50"
           >
             <ArrowLeft size={19} />
@@ -296,7 +309,11 @@ export default function EditLokasiPage({
           FORM
       ========================== */}
 
-      <form id="edit-lokasi-form" onSubmit={handleSubmit} className="pb-10">
+      <form
+        id="edit-lokasi-form"
+        onSubmit={handleFormSubmit}
+        className="pb-10"
+      >
         <SectionTitle>Detail Lokasi</SectionTitle>
         <Card>
           <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-3">
@@ -456,6 +473,32 @@ export default function EditLokasiPage({
           </div>
         </div>
       )}
+
+      {/* =========================
+          MODAL KONFIRMASI
+      ========================== */}
+
+      <AskModal
+        isOpen={showKonfirmasiEdit}
+        variant="tanya"
+        title="Konfirmasi Edit"
+        description="Apakah anda yakin ingin mengubah lokasi donor?"
+        buttonLabel="Edit"
+        cancelLabel="Batal"
+        onClose={() => setShowKonfirmasiEdit(false)}
+        onConfirm={prosesEdit}
+      />
+
+      <AskModal
+        isOpen={showKonfirmasiKembali}
+        variant="tanya"
+        title="Konfirmasi Kembali"
+        description="Apakah anda yakin ingin kembali? (Data tidak akan teredit)"
+        buttonLabel="Kembali"
+        cancelLabel="Batal"
+        onClose={() => setShowKonfirmasiKembali(false)}
+        onConfirm={() => router.back()}
+      />
     </div>
   );
 }
