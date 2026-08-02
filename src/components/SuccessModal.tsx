@@ -32,8 +32,8 @@ export default function SuccessModal({
   const imageSrc = image ?? defaultImage[variant];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="relative w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
+    <div className="animasi-fade fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="animasi-scale relative w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
         {variant === "error" && (
           <button
             type="button"
