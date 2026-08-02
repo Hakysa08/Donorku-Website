@@ -210,7 +210,7 @@ export default function DetailJadwalPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/dashboard/jadwaldonor")}
-            className="flex h-[53px] items-center gap-2 rounded-full  bg-white px-7 text-base font-semibold text-gray-700 hover:bg-gray-50"
+            className="flex h-[53px] items-center gap-2 rounded-full border border-gray-200 bg-white px-7 text-base font-semibold text-gray-700 hover:bg-gray-50"
           >
             <ArrowLeft size={19} />
             Kembali
