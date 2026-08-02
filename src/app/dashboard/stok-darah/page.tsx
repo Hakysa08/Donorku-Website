@@ -56,9 +56,9 @@ const STATUS_OPTIONS: { value: StatusStok; label: string }[] = [
 ];
 
 const STATUS_BADGE: Record<StatusStok, string> = {
-  aman: "bg-green-100 text-green-700",
-  menipis: "bg-yellow-100 text-yellow-700",
-  kritis: "bg-red-100 text-red-700",
+  aman: "bg-[#68FF5B] text-black",
+  menipis: "bg-[#F4FF5B] text-black",
+  kritis: "bg-[#EC2727] text-black",
 };
 
 const STATUS_LABEL: Record<StatusStok, string> = {
@@ -352,7 +352,7 @@ export default function StokDarahPage() {
 
                     <td className="px-4 py-3">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[item.status]}`}
+                        className={`inline-block rounded-full px-4 py-1.5 text-xs font-semibold ${STATUS_BADGE[item.status]}`}
                       >
                         {STATUS_LABEL[item.status]}
                       </span>
