@@ -13,7 +13,8 @@ type TokenPayload = {
 };
 
 const MAX_FOTO = 5;
-const STATUS_VALID = ["aktif", "nonaktif", "selesai"];
+const STATUS_VALID = ["aktif", "nonaktif", "selesai"] as const;
+type StatusJadwal = (typeof STATUS_VALID)[number];
 
 function verifyToken(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
@@ -347,10 +348,11 @@ export async function PUT(
       );
     }
 
-    const statusFinal =
-      status_jadwal && STATUS_VALID.includes(status_jadwal)
-        ? status_jadwal
-        : existing.status_jadwal;
+    const statusFinal: StatusJadwal =
+      status_jadwal &&
+      (STATUS_VALID as readonly string[]).includes(status_jadwal)
+        ? (status_jadwal as StatusJadwal)
+        : (existing.status_jadwal as StatusJadwal);
 
     const uploadDir = path.join(
       process.cwd(),
@@ -403,7 +405,7 @@ export async function PUT(
         pendonor_hadir: hadirNumber,
         darah_terkumpul: darahNumber,
         foto_lokasi: JSON.stringify(fotoPathsFinal),
-        status_jadwal: statusFinal as any,
+        status_jadwal: statusFinal,
       },
     });
 

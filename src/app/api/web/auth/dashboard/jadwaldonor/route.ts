@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
@@ -77,7 +78,7 @@ export async function GET(req: NextRequest) {
         ? limitRaw
         : 8;
 
-    const AND: any[] = [];
+    const AND: Prisma.JadwalDonorWhereInput[] = [];
 
     if (search) {
       AND.push({

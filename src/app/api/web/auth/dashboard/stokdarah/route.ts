@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import jwt from "jsonwebtoken";
 
 type TokenPayload = {
@@ -67,7 +68,7 @@ export async function GET(req: NextRequest) {
         ? limitRaw
         : 8;
 
-    const where: any = {};
+    const where: Prisma.StokDarahWhereInput = {};
 
     if (golongan) {
       where.golongan_darah = golongan;
