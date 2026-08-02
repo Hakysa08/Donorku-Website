@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@radix-ui/react-popover": "^1.1.23",
     "bcryptjs": "^3.0.3",
+    "date-fns": "^4.4.0",
     "google-auth-library": "^11.0.0",
     "jose": "^6.2.5",
     "jsonwebtoken": "^9.0.3",
@@ -19,7 +21,8 @@
     "nodemailer": "^9.0.3",
     "prisma": "^5.22.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
