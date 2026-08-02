@@ -23,7 +23,8 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "recharts": "^3.10.1",
-    "resend": "^6.18.1"
+    "resend": "^6.18.1",
+    "to-regex-range": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
