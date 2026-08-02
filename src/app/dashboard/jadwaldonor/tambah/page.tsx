@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 
+import DatePickerInput from "@/components/DatePickerInput";
 import { Eye, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -86,10 +87,6 @@ export default function TambahJadwalPage() {
   const [showKonfirmasiTambah, setShowKonfirmasiTambah] = useState(false);
   const [showKonfirmasiKembali, setShowKonfirmasiKembali] = useState(false);
 
-  /* =======================================================
-     AMBIL DATA LOKASI
-  ======================================================= */
-
   useEffect(() => {
     async function ambilLokasi() {
       try {
@@ -130,10 +127,6 @@ export default function TambahJadwalPage() {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
-
-  /* =======================================================
-     FOTO (multi, max 5)
-  ======================================================= */
 
   function handleTambahFoto(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
@@ -188,11 +181,6 @@ export default function TambahJadwalPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /* =======================================================
-     SUBMIT: validasi -> munculkan modal "Konfirmasi Tambah"
-     Proses simpan sebenarnya ada di prosesTambah()
-  ======================================================= */
 
   function handleFormSubmit(event: FormEvent) {
     event.preventDefault();
@@ -261,7 +249,6 @@ export default function TambahJadwalPage() {
       data.append("pendonor_hadir", form.pendonor_hadir || "0");
       data.append("darah_terkumpul", form.darah_terkumpul || "0");
 
-      // key "foto" diulang per file -> backend baca via getAll("foto")
       slots.forEach((slot) => data.append("foto", slot.file));
 
       const response = await fetch(
@@ -289,7 +276,6 @@ export default function TambahJadwalPage() {
 
       console.log("CREATE JADWAL SUCCESS:", result);
 
-      // setelah sukses -> List, bukan View
       router.push("/dashboard/jadwaldonor");
       router.refresh();
     } catch (error) {
@@ -300,15 +286,11 @@ export default function TambahJadwalPage() {
     }
   }
 
-  /* =======================================================
-     UI
-  ======================================================= */
-
   return (
     <div className="min-h-full bg-white px-10 py-7 text-black">
       <form id="tambah-jadwal-form" onSubmit={handleFormSubmit}>
-        <div className="mb-9 flex items-center justify-between">
-          <h1 className="text-[43px] font-bold tracking-tight">
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-[36px] font-bold tracking-tight">
             Tambah Jadwal
           </h1>
 
@@ -320,16 +302,16 @@ export default function TambahJadwalPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex h-[53px] items-center justify-center gap-2 rounded-full bg-red-500 px-8 text-base font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Save size={19} />
+              <Save size={16} />
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         </div>
 
         {error && (
-          <div className="mb-7 rounded-xl border border-red-200 bg-red-50 px-5 py-3.5 text-base text-red-600">
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">
             {error}
           </div>
         )}
@@ -339,13 +321,12 @@ export default function TambahJadwalPage() {
         <Card>
           <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-3">
             <Field label="Hari / Tanggal" required>
-              <input
-                type="date"
-                name="tanggal_pelaksanaan"
+              <DatePickerInput
                 value={form.tanggal_pelaksanaan}
-                onChange={handleChange}
+                onChange={(value) =>
+                  setForm((prev) => ({ ...prev, tanggal_pelaksanaan: value }))
+                }
                 required
-                className={inputClass}
               />
             </Field>
 
@@ -398,7 +379,7 @@ export default function TambahJadwalPage() {
                 placeholder="Alamat otomatis terisi setelah memilih lokasi"
                 readOnly
                 rows={3}
-                className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 px-6 py-3.5 text-lg text-black placeholder:text-gray-400 focus:outline-none"
+                className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 px-5 py-3 text-base text-black placeholder:text-gray-400 focus:outline-none"
               />
             </Field>
           </div>
@@ -514,25 +495,23 @@ export default function TambahJadwalPage() {
             className="hidden"
           />
 
-          <label className="mb-2.5 block text-lg font-semibold text-gray-800">
-            Foto
-          </label>
-
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={slots.length >= MAX_FOTO}
-            className="flex h-14 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-lg text-gray-400 transition hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <span className="flex-1 px-5">Pilih Gambar</span>
-            <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-7 text-gray-700">
-              Browse
-            </span>
-          </button>
+          <Field label="Foto" required>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={slots.length >= MAX_FOTO}
+              className="flex h-12 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-base text-gray-400 transition hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span className="flex-1 px-5">Pilih Gambar</span>
+              <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-6 text-sm text-gray-700">
+                Browse
+              </span>
+            </button>
+          </Field>
 
           {slots.length > 0 && (
             <div className="mt-5">
-              <p className="mb-3.5 text-lg font-medium text-gray-800">
+              <p className="mb-3 text-sm font-medium text-gray-700">
                 Preview ({slots.length}/{MAX_FOTO})
               </p>
 
@@ -553,18 +532,18 @@ export default function TambahJadwalPage() {
                         type="button"
                         title="Lihat foto"
                         onClick={() => setLightboxUrl(slot.url)}
-                        className="flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
                       >
-                        <Eye size={17} />
+                        <Eye size={16} />
                       </button>
 
                       <button
                         type="button"
                         title="Hapus foto"
                         onClick={() => hapusFoto(slot.key)}
-                        className="flex h-9 w-9 items-center justify-center rounded-md bg-red-500 text-white shadow hover:bg-red-600"
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-600 text-white shadow hover:bg-red-500"
                       >
-                        <Trash2 size={17} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -573,7 +552,7 @@ export default function TambahJadwalPage() {
             </div>
           )}
 
-          <p className="mb-5 mt-2.5 text-sm text-gray-400">
+          <p className="mb-5 mt-3 text-sm text-gray-400">
             Format JPG/JPEG, maksimal {MAX_FOTO} gambar, masing-masing 5 MB.
           </p>
         </Card>
@@ -635,7 +614,7 @@ export default function TambahJadwalPage() {
 ========================================================= */
 
 const inputClass =
-  "h-14 w-full rounded-xl border border-gray-200 bg-white px-6 text-lg text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
+  "h-12 w-full rounded-xl border border-gray-200 bg-white px-5 text-base text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -664,7 +643,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-2.5 block text-lg font-semibold text-gray-800">
+      <label className="mb-2 block text-sm font-semibold text-gray-700">
         {label}
         {required && <span className="text-red-500"> *</span>}
       </label>

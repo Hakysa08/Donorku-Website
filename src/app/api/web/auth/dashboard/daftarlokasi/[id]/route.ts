@@ -1,7 +1,4 @@
-import {
-  NextRequest,
-  NextResponse,
-} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
@@ -13,11 +10,8 @@ type TokenPayload = {
   email: string;
 };
 
-function verifyToken(
-  req: NextRequest
-): TokenPayload | null {
-  const token =
-    req.cookies.get("token")?.value;
+function verifyToken(req: NextRequest): TokenPayload | null {
+  const token = req.cookies.get("token")?.value;
 
   if (!token) {
     return null;
@@ -86,76 +80,60 @@ export async function GET(
 
     const idLokasi = Number(id);
 
-    if (
-      !Number.isInteger(idLokasi) ||
-      idLokasi <= 0
-    ) {
+    if (!Number.isInteger(idLokasi) || idLokasi <= 0) {
       return NextResponse.json(
         {
-          message:
-            "ID lokasi tidak valid",
+          message: "ID lokasi tidak valid",
         },
         { status: 400 }
       );
     }
 
-    const lokasi =
-      await prisma.lokasiDonor.findUnique({
-        where: {
-          id_lokasi: idLokasi,
-        },
+    const lokasi = await prisma.lokasiDonor.findUnique({
+      where: {
+        id_lokasi: idLokasi,
+      },
 
-        select: {
-          id_lokasi: true,
-          nama_lokasi: true,
-          alamat: true,
-          kota: true,
-          no_hp: true,
-          longitude: true,
-          latitude: true,
-        },
-      });
+      select: {
+        id_lokasi: true,
+        nama_lokasi: true,
+        alamat: true,
+        kota: true,
+        no_hp: true,
+        longitude: true,
+        latitude: true,
+      },
+    });
 
     if (!lokasi) {
       return NextResponse.json(
         {
-          message:
-            "Lokasi tidak ditemukan",
+          message: "Lokasi tidak ditemukan",
         },
         { status: 404 }
       );
     }
 
-    const punyaFoto =
-      await fotoExists(idLokasi);
+    const punyaFoto = await fotoExists(idLokasi);
 
     return NextResponse.json({
-      message:
-        "Detail lokasi berhasil diambil",
+      message: "Detail lokasi berhasil diambil",
 
       data: {
         ...lokasi,
 
-        foto_url: punyaFoto
-          ? `/uploads/lokasi/${idLokasi}.jpg`
-          : null,
+        foto_url: punyaFoto ? `/uploads/lokasi/${idLokasi}.jpg` : null,
       },
     });
   } catch (error) {
-    console.error(
-      "GET DETAIL LOKASI ERROR:",
-      error
-    );
+    console.error("GET DETAIL LOKASI ERROR:", error);
 
     return NextResponse.json(
       {
-        message:
-          "Gagal mengambil detail lokasi",
+        message: "Gagal mengambil detail lokasi",
 
         error:
-          process.env.NODE_ENV ===
-            "development" &&
-          error instanceof Error
+          process.env.NODE_ENV === "development" && error instanceof Error
             ? error.message
             : undefined,
       },
@@ -190,14 +168,10 @@ export async function PUT(
 
     const idLokasi = Number(id);
 
-    if (
-      !Number.isInteger(idLokasi) ||
-      idLokasi <= 0
-    ) {
+    if (!Number.isInteger(idLokasi) || idLokasi <= 0) {
       return NextResponse.json(
         {
-          message:
-            "ID lokasi tidak valid",
+          message: "ID lokasi tidak valid",
         },
         { status: 400 }
       );
@@ -207,18 +181,16 @@ export async function PUT(
        CEK DATA
     ===================================================== */
 
-    const existing =
-      await prisma.lokasiDonor.findUnique({
-        where: {
-          id_lokasi: idLokasi,
-        },
-      });
+    const existing = await prisma.lokasiDonor.findUnique({
+      where: {
+        id_lokasi: idLokasi,
+      },
+    });
 
     if (!existing) {
       return NextResponse.json(
         {
-          message:
-            "Lokasi tidak ditemukan",
+          message: "Lokasi tidak ditemukan",
         },
         { status: 404 }
       );
@@ -228,108 +200,70 @@ export async function PUT(
        FORMDATA
     ===================================================== */
 
-    const formData =
-      await req.formData();
+    const formData = await req.formData();
 
-    const nama_lokasi = String(
-      formData.get("nama_lokasi") ?? ""
-    ).trim();
+    const nama_lokasi = String(formData.get("nama_lokasi") ?? "").trim();
 
-    const alamat = String(
-      formData.get("alamat") ?? ""
-    ).trim();
+    const alamat = String(formData.get("alamat") ?? "").trim();
 
-    const kota = String(
-      formData.get("kota") ?? ""
-    ).trim();
+    const kota = String(formData.get("kota") ?? "").trim();
 
-    const no_hp = String(
-      formData.get("no_hp") ?? ""
-    ).trim();
+    const no_hp = String(formData.get("no_hp") ?? "").trim();
 
-    const longitudeRaw = String(
-      formData.get("longitude") ?? ""
-    ).trim();
+    const longitudeRaw = String(formData.get("longitude") ?? "").trim();
 
-    const latitudeRaw = String(
-      formData.get("latitude") ?? ""
-    ).trim();
+    const latitudeRaw = String(formData.get("latitude") ?? "").trim();
 
-    const foto =
-      formData.get("foto");
+    const foto = formData.get("foto");
 
     /* =====================================================
        VALIDASI
     ===================================================== */
 
-    if (
-      !nama_lokasi ||
-      !alamat ||
-      !kota ||
-      !no_hp
-    ) {
+    if (!nama_lokasi || !alamat || !kota || !no_hp) {
       return NextResponse.json(
         {
-          message:
-            "Nama lokasi, alamat, kota, dan nomor HP wajib diisi",
+          message: "Nama lokasi, alamat, kota, dan nomor HP wajib diisi",
         },
         { status: 400 }
       );
     }
 
-    if (
-      !longitudeRaw ||
-      !latitudeRaw
-    ) {
+    if (!longitudeRaw || !latitudeRaw) {
       return NextResponse.json(
         {
-          message:
-            "Longitude dan latitude wajib diisi",
+          message: "Longitude dan latitude wajib diisi",
         },
         { status: 400 }
       );
     }
 
-    const longitude =
-      Number(longitudeRaw);
+    const longitude = Number(longitudeRaw);
 
-    const latitude =
-      Number(latitudeRaw);
+    const latitude = Number(latitudeRaw);
 
-    if (
-      !Number.isFinite(longitude) ||
-      !Number.isFinite(latitude)
-    ) {
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
       return NextResponse.json(
         {
-          message:
-            "Longitude dan latitude harus berupa angka",
+          message: "Longitude dan latitude harus berupa angka",
         },
         { status: 400 }
       );
     }
 
-    if (
-      longitude < -180 ||
-      longitude > 180
-    ) {
+    if (longitude < -180 || longitude > 180) {
       return NextResponse.json(
         {
-          message:
-            "Longitude harus berada antara -180 sampai 180",
+          message: "Longitude harus berada antara -180 sampai 180",
         },
         { status: 400 }
       );
     }
 
-    if (
-      latitude < -90 ||
-      latitude > 90
-    ) {
+    if (latitude < -90 || latitude > 90) {
       return NextResponse.json(
         {
-          message:
-            "Latitude harus berada antara -90 sampai 90",
+          message: "Latitude harus berada antara -90 sampai 90",
         },
         { status: 400 }
       );
@@ -339,31 +273,30 @@ export async function PUT(
        UPDATE MYSQL
     ===================================================== */
 
-    const lokasi =
-      await prisma.lokasiDonor.update({
-        where: {
-          id_lokasi: idLokasi,
-        },
+    const lokasi = await prisma.lokasiDonor.update({
+      where: {
+        id_lokasi: idLokasi,
+      },
 
-        data: {
-          nama_lokasi,
-          alamat,
-          kota,
-          no_hp,
-          longitude,
-          latitude,
-        },
+      data: {
+        nama_lokasi,
+        alamat,
+        kota,
+        no_hp,
+        longitude,
+        latitude,
+      },
 
-        select: {
-          id_lokasi: true,
-          nama_lokasi: true,
-          alamat: true,
-          kota: true,
-          no_hp: true,
-          longitude: true,
-          latitude: true,
-        },
-      });
+      select: {
+        id_lokasi: true,
+        nama_lokasi: true,
+        alamat: true,
+        kota: true,
+        no_hp: true,
+        longitude: true,
+        latitude: true,
+      },
+    });
 
     /* =====================================================
        FOTO BARU
@@ -375,31 +308,20 @@ export async function PUT(
        overwrite {id}.jpg
     ===================================================== */
 
-    if (
-      foto instanceof File &&
-      foto.size > 0
-    ) {
-      if (
-        foto.type !== "image/jpeg" &&
-        foto.type !== "image/jpg"
-      ) {
+    if (foto instanceof File && foto.size > 0) {
+      if (foto.type !== "image/jpeg" && foto.type !== "image/jpg") {
         return NextResponse.json(
           {
-            message:
-              "Foto harus berformat JPG/JPEG",
+            message: "Foto harus berformat JPG/JPEG",
           },
           { status: 400 }
         );
       }
 
-      if (
-        foto.size >
-        5 * 1024 * 1024
-      ) {
+      if (foto.size > 5 * 1024 * 1024) {
         return NextResponse.json(
           {
-            message:
-              "Ukuran foto maksimal 5 MB",
+            message: "Ukuran foto maksimal 5 MB",
           },
           { status: 400 }
         );
@@ -412,52 +334,35 @@ export async function PUT(
         "lokasi"
       );
 
-      await fs.mkdir(
-        uploadDir,
-        {
-          recursive: true,
-        }
-      );
+      await fs.mkdir(uploadDir, {
+        recursive: true,
+      });
 
-      const bytes =
-        await foto.arrayBuffer();
+      const bytes = await foto.arrayBuffer();
 
-      await fs.writeFile(
-        getFotoPath(idLokasi),
-        Buffer.from(bytes)
-      );
+      await fs.writeFile(getFotoPath(idLokasi), Buffer.from(bytes));
     }
 
-    const punyaFoto =
-      await fotoExists(idLokasi);
+    const punyaFoto = await fotoExists(idLokasi);
 
     return NextResponse.json({
-      message:
-        "Lokasi berhasil diperbarui",
+      message: "Lokasi berhasil diperbarui",
 
       data: {
         ...lokasi,
 
-        foto_url: punyaFoto
-          ? `/uploads/lokasi/${idLokasi}.jpg`
-          : null,
+        foto_url: punyaFoto ? `/uploads/lokasi/${idLokasi}.jpg` : null,
       },
     });
   } catch (error) {
-    console.error(
-      "UPDATE LOKASI ERROR:",
-      error
-    );
+    console.error("UPDATE LOKASI ERROR:", error);
 
     return NextResponse.json(
       {
-        message:
-          "Gagal memperbarui lokasi",
+        message: "Gagal memperbarui lokasi",
 
         error:
-          process.env.NODE_ENV ===
-            "development" &&
-          error instanceof Error
+          process.env.NODE_ENV === "development" && error instanceof Error
             ? error.message
             : undefined,
       },
@@ -468,6 +373,9 @@ export async function PUT(
 
 /* =========================================================
    DELETE
+
+   Stok darah yang terkait lokasi ini ikut dihapus permanen
+   bersamaan dengan lokasinya (dibungkus $transaction).
 ========================================================= */
 
 export async function DELETE(
@@ -492,42 +400,36 @@ export async function DELETE(
 
     const idLokasi = Number(id);
 
-    if (
-      !Number.isInteger(idLokasi) ||
-      idLokasi <= 0
-    ) {
+    if (!Number.isInteger(idLokasi) || idLokasi <= 0) {
       return NextResponse.json(
         {
-          message:
-            "ID lokasi tidak valid",
+          message: "ID lokasi tidak valid",
         },
         { status: 400 }
       );
     }
 
-    const lokasi =
-      await prisma.lokasiDonor.findUnique({
-        where: {
-          id_lokasi: idLokasi,
-        },
+    const lokasi = await prisma.lokasiDonor.findUnique({
+      where: {
+        id_lokasi: idLokasi,
+      },
 
-        select: {
-          id_lokasi: true,
+      select: {
+        id_lokasi: true,
 
-          _count: {
-            select: {
-              jadwal_donor: true,
-              stok_darah: true,
-            },
+        _count: {
+          select: {
+            jadwal_donor: true,
+            stok_darah: true,
           },
         },
-      });
+      },
+    });
 
     if (!lokasi) {
       return NextResponse.json(
         {
-          message:
-            "Lokasi tidak ditemukan",
+          message: "Lokasi tidak ditemukan",
         },
         { status: 404 }
       );
@@ -538,9 +440,7 @@ export async function DELETE(
      * masih mempunyai jadwal donor.
      */
 
-    if (
-      lokasi._count.jadwal_donor > 0
-    ) {
+    if (lokasi._count.jadwal_donor > 0) {
       return NextResponse.json(
         {
           message:
@@ -551,19 +451,15 @@ export async function DELETE(
     }
 
     /*
-     * Schema StokDarah memiliki
-     * id_lokasi nullable, jadi relasi
-     * stok bisa dilepas.
+     * Stok darah yang terkait lokasi ini
+     * ikut dihapus permanen bersamaan
+     * dengan lokasinya.
      */
 
     await prisma.$transaction([
-      prisma.stokDarah.updateMany({
+      prisma.stokDarah.deleteMany({
         where: {
           id_lokasi: idLokasi,
-        },
-
-        data: {
-          id_lokasi: null,
         },
       }),
 
@@ -579,9 +475,7 @@ export async function DELETE(
     ===================================================== */
 
     try {
-      await fs.unlink(
-        getFotoPath(idLokasi)
-      );
+      await fs.unlink(getFotoPath(idLokasi));
     } catch {
       /*
        * Tidak masalah kalau lokasi
@@ -590,24 +484,17 @@ export async function DELETE(
     }
 
     return NextResponse.json({
-      message:
-        "Lokasi berhasil dihapus",
+      message: "Lokasi berhasil dihapus",
     });
   } catch (error) {
-    console.error(
-      "DELETE LOKASI ERROR:",
-      error
-    );
+    console.error("DELETE LOKASI ERROR:", error);
 
     return NextResponse.json(
       {
-        message:
-          "Gagal menghapus lokasi",
+        message: "Gagal menghapus lokasi",
 
         error:
-          process.env.NODE_ENV ===
-            "development" &&
-          error instanceof Error
+          process.env.NODE_ENV === "development" && error instanceof Error
             ? error.message
             : undefined,
       },

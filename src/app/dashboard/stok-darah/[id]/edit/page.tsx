@@ -22,10 +22,10 @@ const INITIAL_FORM: FormStok = {
 };
 
 const inputClass =
-  "h-12 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500";
+  "h-12 w-full rounded-xl border border-gray-200 bg-white px-5 text-base text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500";
 
 const textareaClass =
-  "min-h-[110px] w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100";
+  "min-h-[110px] w-full resize-none rounded-xl border border-gray-200 bg-white px-5 py-3 text-base text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100";
 
 function Field({
   label,
@@ -38,12 +38,20 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold text-gray-800">
+      <label className="mb-2 block text-sm font-semibold text-gray-700">
         {label}
         {required && <span className="text-red-500"> *</span>}
       </label>
       {children}
     </div>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mb-5 mt-9 text-xl font-bold text-gray-900 first:mt-0">
+      {children}
+    </h2>
   );
 }
 
@@ -176,43 +184,45 @@ export default function EditStokDarahPage() {
       {/* ================= HEADER ================= */}
 
       <div className="mb-8 flex items-center justify-between gap-6">
-        <div>
-          <h1 className="text-[28px] font-bold">Edit Stok Darah</h1>
-          <p className="mt-1 text-sm text-gray-500">Id {id}</p>
+          <div>
+            <h1 className="text-[36px] font-bold tracking-tight">
+              Edit Stok Darah
+            </h1>
+            <p className="mt-1 text-base text-gray-500">ID {id}</p>
+          </div>
+        
+          <div className="flex items-center gap-3">
+            <BackButton
+              onClick={() => setKonfirmasiKembali(true)}
+            />
+        
+            <button
+              type="submit"
+              form="form-edit-stok"
+              className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition hover:bg-red-500"
+            >
+              <Save size={16} />
+              Simpan
+            </button>
+          </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <BackButton
-            onClick={() => setKonfirmasiKembali(true)}
-          />
-
-          <button
-            type="submit"
-            form="form-edit-stok"
-            className="flex h-11 items-center gap-2 rounded-full bg-[#ff2938] px-5 text-sm font-medium text-white hover:bg-red-600"
-          >
-            <Save size={16} />
-            Simpan
-          </button>
-        </div>
-      </div>
 
       {error && (
-        <div className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">
           {error}
         </div>
       )}
 
       {/* ================= FORM ================= */}
 
-      <h2 className="mb-4 text-base font-bold text-gray-900">Detail Stok</h2>
+      <SectionTitle>Detail Stok</SectionTitle>
 
       <form
         id="form-edit-stok"
         onSubmit={handleSubmit}
-        className="rounded-2xl border border-gray-200 bg-white p-5"
+        className="rounded-2xl border border-gray-200 bg-white p-7"
       >
-        <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">
           <Field label="Jumlah Stok" required>
             <input
               type="number"
@@ -264,7 +274,7 @@ export default function EditStokDarahPage() {
         isOpen={konfirmasiEdit}
         variant="tanya"
         title="Konfirmasi Edit"
-        description="Apakah anda yakin ingin mengubah jadwal donor?"
+        description="Apakah anda yakin ingin mengubah stok darah?"
         buttonLabel={saving ? "Menyimpan..." : "Edit"}
         cancelLabel="Batal"
         onClose={() => {

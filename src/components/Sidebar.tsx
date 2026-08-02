@@ -10,6 +10,7 @@ const MENU_ITEMS = [
     href: "/dashboard/beranda",
     icon: "/sidebar/beranda.png",
     activeIcon: "/sidebar/beranda_red.png",
+    extraActivePaths: ["/dashboard/profile"],
   },
   {
     label: "Daftar Lokasi",
@@ -79,28 +80,16 @@ export default function Sidebar() {
       {/* Menu */}
       <nav className="flex flex-1 flex-col gap-1.5">
         {MENU_ITEMS.map(
-          ({
-            label,
-            href,
-            icon,
-            activeIcon,
-          }) => {
-            /*
-             * Beranda hanya aktif tepat di /dashboard.
-             *
-             * Menu lainnya boleh aktif juga pada child route.
-             * Contoh:
-             * /dashboard/lokasi/123
-             * tetap mengaktifkan Daftar Lokasi.
-             */
+          ({ label, href, icon, activeIcon, extraActivePaths }) => {
             const isActive =
               href === "/dashboard"
                 ? pathname === "/dashboard"
                 : pathname === href ||
-                  pathname.startsWith(
-                    `${href}/`
+                  pathname.startsWith(`${href}/`) ||
+                  (extraActivePaths ?? []).some(
+                    (p) => pathname === p || pathname.startsWith(`${p}/`)
                   );
-
+        
             return (
               <Link
                 key={href}

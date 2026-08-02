@@ -20,7 +20,7 @@ type Lokasi = {
 };
 
 const inputClass =
-  "h-14 w-full rounded-xl border border-gray-200 bg-white px-6 text-lg text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
+  "h-12 w-full rounded-xl border border-gray-200 bg-white px-5 text-base text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
 
 function Field({
   label,
@@ -33,9 +33,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-2.5 block text-lg font-semibold text-gray-800">
+      <label className="mb-2 block text-sm font-semibold text-gray-700">
         {label}
-        {required && <span className="text-red-500">*</span>}
+        {required && <span className="text-red-500"> *</span>}
       </label>
       {children}
     </div>
@@ -76,28 +76,17 @@ export default function EditLokasiPage({
   const [latitude, setLatitude] = useState("");
 
   const [foto, setFoto] = useState<File | null>(null);
-
   const [fotoLama, setFotoLama] = useState<string | null>(null);
-
-  // true kalau user menghapus foto lama (tanpa pilih foto baru)
   const [hapusFotoLama, setHapusFotoLama] = useState(false);
-
   const [preview, setPreview] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // modal preview foto (lightbox)
   const [showLightbox, setShowLightbox] = useState(false);
-
-  // modal konfirmasi aksi
   const [showKonfirmasiEdit, setShowKonfirmasiEdit] = useState(false);
   const [showKonfirmasiKembali, setShowKonfirmasiKembali] = useState(false);
-
-  /* =====================================================
-     AMBIL DATA
-  ===================================================== */
 
   useEffect(() => {
     async function ambilDetail() {
@@ -126,15 +115,12 @@ export default function EditLokasiPage({
         setKota(data.kota);
         setNoHp(data.no_hp ?? "");
         setAlamat(data.alamat);
-
         setLongitude(
           data.longitude !== null ? String(data.longitude) : ""
         );
-
         setLatitude(
           data.latitude !== null ? String(data.latitude) : ""
         );
-
         setFotoLama(data.foto_url);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Terjadi kesalahan");
@@ -145,10 +131,6 @@ export default function EditLokasiPage({
 
     ambilDetail();
   }, [id]);
-
-  /* =====================================================
-     PILIH FOTO
-  ===================================================== */
 
   function pilihFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -177,10 +159,8 @@ export default function EditLokasiPage({
     setPreview(URL.createObjectURL(file));
   }
 
-  // tombol tempat sampah di preview: hapus foto (baru ATAU lama)
   function hapusFotoTampilan() {
     if (preview) {
-      // ada foto baru yang lagi dipreview -> batalkan pilihan itu
       URL.revokeObjectURL(preview);
       setFoto(null);
       setPreview(null);
@@ -190,17 +170,11 @@ export default function EditLokasiPage({
       return;
     }
 
-    // yang ditampilkan foto lama -> tandai buat dihapus pas simpan
     setFotoLama(null);
     setHapusFotoLama(true);
   }
 
   const fotoDitampilkan = preview ?? fotoLama;
-
-  /* =====================================================
-     SUBMIT: form munculin modal "Konfirmasi Edit" dulu,
-     proses simpan sebenarnya ada di prosesEdit()
-  ===================================================== */
 
   function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -246,7 +220,6 @@ export default function EditLokasiPage({
         );
       }
 
-      // setelah sukses -> ke halaman Daftar Lokasi (list), bukan detail/preview
       router.push("/dashboard/daftarlokasi");
       router.refresh();
     } catch (err) {
@@ -267,13 +240,8 @@ export default function EditLokasiPage({
 
   return (
     <div className="min-h-full bg-white px-10 py-7 text-black">
-      {/* =========================
-          HEADER: judul kiri satu baris,
-          tombol Kembali + Simpan kanan, sejajar
-      ========================== */}
-
-      <div className="mb-9 flex items-start justify-between">
-        <h1 className="text-[43px] font-bold tracking-tight">
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="text-[36px] font-bold tracking-tight">
           Edit Lokasi ID {id}
         </h1>
 
@@ -286,24 +254,19 @@ export default function EditLokasiPage({
             type="submit"
             form="edit-lokasi-form"
             disabled={saving}
-            className="flex h-[53px] items-center gap-2 rounded-full bg-[#ff2938] px-7 text-base font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+            className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition hover:bg-red-500 disabled:opacity-60"
           >
-            <Save size={19} />
+            <Save size={16} />
             {saving ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
       </div>
 
-      {/* ERROR */}
       {error && (
-        <div className="mb-7 rounded-xl bg-red-50 px-5 py-3.5 text-base text-red-600">
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">
           {error}
         </div>
       )}
-
-      {/* =========================
-          FORM
-      ========================== */}
 
       <form
         id="edit-lokasi-form"
@@ -312,7 +275,7 @@ export default function EditLokasiPage({
       >
         <SectionTitle>Detail Lokasi</SectionTitle>
         <Card>
-          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">
             <Field label="Lokasi Donor" required>
               <input
                 value={namaLokasi}
@@ -329,7 +292,7 @@ export default function EditLokasiPage({
               />
             </Field>
 
-            <Field label="No Hp" required>
+            <Field label="No Petugas" required>
               <input
                 value={noHp}
                 onChange={(e) => setNoHp(e.target.value)}
@@ -343,7 +306,7 @@ export default function EditLokasiPage({
                   value={alamat}
                   onChange={(e) => setAlamat(e.target.value)}
                   rows={3}
-                  className="w-full resize-none rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-lg text-gray-800 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                  className="w-full resize-none rounded-xl border border-gray-200 bg-white px-5 py-3 text-base text-gray-800 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
                 />
               </Field>
             </div>
@@ -380,21 +343,20 @@ export default function EditLokasiPage({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex h-14 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-lg text-gray-400 transition hover:border-gray-300"
+              className="flex h-12 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-base text-gray-400 transition hover:border-gray-300"
             >
               <span className="flex-1 truncate px-5">
                 {foto ? foto.name : "Pilih Gambar"}
               </span>
-              <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-7 text-gray-700">
+              <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-6 text-sm text-gray-700">
                 Browse
               </span>
             </button>
           </Field>
 
-          {/* PREVIEW FOTO */}
           {fotoDitampilkan && (
-            <div className="mt-6">
-              <p className="mb-3.5 text-lg font-medium text-gray-800">
+            <div className="mt-5">
+              <p className="mb-3 text-sm font-medium text-gray-700">
                 Preview
               </p>
 
@@ -414,18 +376,18 @@ export default function EditLokasiPage({
                     type="button"
                     title="Lihat"
                     onClick={() => setShowLightbox(true)}
-                    className="flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
                   >
-                    <Eye size={17} />
+                    <Eye size={16} />
                   </button>
 
                   <button
                     type="button"
                     title="Hapus"
                     onClick={hapusFotoTampilan}
-                    className="flex h-9 w-9 items-center justify-center rounded-md bg-red-500 text-white shadow hover:bg-red-600"
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-red-600 text-white shadow hover:bg-red-500"
                   >
-                    <Trash2 size={17} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -433,10 +395,6 @@ export default function EditLokasiPage({
           )}
         </Card>
       </form>
-
-      {/* =========================
-          MODAL POPUP FOTO
-      ========================== */}
 
       {showLightbox && fotoDitampilkan && (
         <div
@@ -469,10 +427,6 @@ export default function EditLokasiPage({
           </div>
         </div>
       )}
-
-      {/* =========================
-          MODAL KONFIRMASI
-      ========================== */}
 
       <AskModal
         isOpen={showKonfirmasiEdit}

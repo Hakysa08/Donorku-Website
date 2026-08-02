@@ -18,7 +18,7 @@ const defaultImage: Record<string, string> = {
   warning: "/popup-card/warning.png",
   tanya: "/popup-card/tanya.png",
   error: "/popup-card/warning.png",
-  success: "/popup-card/success.png",
+  success: "/popup-card/benar.png",
 };
 
 export default function AskModal({

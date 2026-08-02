@@ -12,7 +12,7 @@ import BackButton from "@/components/BackButton";
 ========================================================= */
 
 const inputClass =
-  "h-14 w-full rounded-xl border border-gray-200 bg-white px-6 text-lg text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
+  "h-12 w-full rounded-xl border border-gray-200 bg-white px-5 text-base text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -41,7 +41,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-2.5 block text-lg font-semibold text-gray-800">
+      <label className="mb-2 block text-sm font-semibold text-gray-700">
         {label}
         {required && <span className="text-red-500"> *</span>}
       </label>
@@ -71,13 +71,8 @@ export default function TambahLokasiPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // modal konfirmasi sebelum benar-benar submit
   const [showKonfirmasiTambah, setShowKonfirmasiTambah] = useState(false);
-
-  // modal konfirmasi sebelum membatalkan/kembali
   const [showKonfirmasiKembali, setShowKonfirmasiKembali] = useState(false);
-
-  // modal preview foto (lightbox)
   const [showLightbox, setShowLightbox] = useState(false);
 
   function pilihFoto(e: React.ChangeEvent<HTMLInputElement>) {
@@ -120,16 +115,12 @@ export default function TambahLokasiPage() {
     }
   }
 
-  // dipanggil pas form di-submit -> BUKAN langsung kirim ke server,
-  // tapi buka modal konfirmasi dulu
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setShowKonfirmasiTambah(true);
   }
 
-  // ini yang beneran kirim data ke server, dipanggil dari tombol
-  // "Tambah" di modal konfirmasi
   async function simpanLokasi() {
     try {
       setLoading(true);
@@ -188,8 +179,8 @@ export default function TambahLokasiPage() {
   return (
     <div className="min-h-full bg-white px-10 py-7 text-black">
       <form id="tambah-lokasi-form" onSubmit={handleSubmit}>
-        <div className="mb-9 flex items-center justify-between">
-          <h1 className="text-[43px] font-bold tracking-tight">
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-[36px] font-bold tracking-tight">
             Tambah Lokasi
           </h1>
 
@@ -201,16 +192,16 @@ export default function TambahLokasiPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex h-[53px] items-center justify-center gap-2 rounded-xl bg-red-500 px-8 text-base font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Save size={19} />
+              <Save size={16} />
               {loading ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         </div>
 
         {error && (
-          <div className="mb-7 rounded-xl border border-red-200 bg-red-50 px-5 py-3.5 text-base text-red-600">
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">
             {error}
           </div>
         )}
@@ -218,7 +209,7 @@ export default function TambahLokasiPage() {
         <SectionTitle>Detail Lokasi</SectionTitle>
 
         <Card>
-          <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
             <Field label="Lokasi Donor" required>
               <input
                 type="text"
@@ -259,7 +250,7 @@ export default function TambahLokasiPage() {
                 placeholder="Masukkan alamat lokasi"
                 rows={4}
                 required
-                className="w-full resize-none rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-lg text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                className="w-full resize-none rounded-xl border border-gray-200 bg-white px-5 py-3 text-base text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100"
               />
             </Field>
 
@@ -298,87 +289,78 @@ export default function TambahLokasiPage() {
             className="hidden"
           />
 
-          <label className="mb-2.5 block text-lg font-semibold text-gray-800">
-            Foto Lokasi
-            <span className="text-red-500"> *</span>
-          </label>
-
-          {!preview ? (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex h-14 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-lg text-gray-400 transition hover:border-gray-300"
-            >
-              <span className="flex-1 px-5">Pilih Gambar</span>
-              <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-7 text-gray-700">
-                Browse
-              </span>
-            </button>
-          ) : (
-            <>
+          <Field label="Foto Lokasi" required>
+            {!preview ? (
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex h-14 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-lg text-gray-700 transition hover:border-gray-300"
+                className="flex h-12 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-base text-gray-400 transition hover:border-gray-300"
+              >
+                <span className="flex-1 px-5">Pilih Gambar</span>
+                <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-6 text-sm text-gray-700">
+                  Browse
+                </span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex h-12 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-base text-gray-700 transition hover:border-gray-300"
               >
                 <span className="min-w-0 flex-1 truncate px-5">
                   {foto?.name}
                 </span>
-                <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-7 text-gray-700">
+                <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-6 text-sm text-gray-700">
                   Browse
                 </span>
               </button>
+            )}
+          </Field>
 
-              {/* PREVIEW */}
-              <div className="mt-5">
-                <p className="mb-3.5 text-lg font-medium text-gray-800">
-                  Preview
-                </p>
+          {preview && (
+            <div className="mt-5">
+              <p className="mb-3 text-sm font-medium text-gray-700">
+                Preview
+              </p>
 
-                <div className="group relative aspect-square w-44 overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
-                  <Image
-                    src={preview}
-                    alt="Preview lokasi"
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
+              <div className="group relative aspect-square w-44 overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+                <Image
+                  src={preview}
+                  alt="Preview lokasi"
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
 
-                  <div className="absolute right-2 top-2 flex gap-1.5">
-                    {/* LIHAT FOTO */}
-                    <button
-                      type="button"
-                      title="Lihat foto"
-                      onClick={() => setShowLightbox(true)}
-                      className="flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
-                    >
-                      <Eye size={17} />
-                    </button>
+                <div className="absolute right-2 top-2 flex gap-1.5">
+                  <button
+                    type="button"
+                    title="Lihat foto"
+                    onClick={() => setShowLightbox(true)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
+                  >
+                    <Eye size={16} />
+                  </button>
 
-                    {/* HAPUS FOTO */}
-                    <button
-                      type="button"
-                      title="Hapus foto"
-                      onClick={hapusFoto}
-                      className="flex h-9 w-9 items-center justify-center rounded-md bg-red-500 text-white shadow hover:bg-red-600"
-                    >
-                      <Trash2 size={17} />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    title="Hapus foto"
+                    onClick={hapusFoto}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-red-600 text-white shadow hover:bg-red-500"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
-          <p className="mb-5 mt-2.5 text-sm text-gray-400">
+          <p className="mb-5 mt-3 text-sm text-gray-400">
             Format JPG/JPEG, maksimal 1 gambar, 5 MB.
           </p>
         </Card>
       </form>
 
-      {/* =========================
-          MODAL KONFIRMASI TAMBAH
-      ========================== */}
       <AskModal
         isOpen={showKonfirmasiTambah}
         variant="tanya"
@@ -392,9 +374,6 @@ export default function TambahLokasiPage() {
         onConfirm={simpanLokasi}
       />
 
-      {/* =========================
-          MODAL KONFIRMASI KEMBALI
-      ========================== */}
       <AskModal
         isOpen={showKonfirmasiKembali}
         variant="tanya"
@@ -405,10 +384,6 @@ export default function TambahLokasiPage() {
         onClose={() => setShowKonfirmasiKembali(false)}
         onConfirm={() => router.back()}
       />
-
-      {/* =========================
-          MODAL POPUP FOTO
-      ========================== */}
 
       {showLightbox && preview && (
         <div

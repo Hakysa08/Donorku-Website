@@ -85,12 +85,12 @@ function hitungUmur(iso?: string | null): number | string {
 ========================================================= */
 
 const STATUS_INFO: Record<StatusPendaftaran, { label: string; kelas: string }> = {
-  menunggu: { label: "Menunggu", kelas: "bg-[#F4D53E] text-[#4A3B00]" },
-  diterima: { label: "Diterima", kelas: "bg-[#4CD471] text-white" },
-  ditolak: { label: "Ditolak", kelas: "bg-[#F0453C] text-white" },
-  dibatalkan: { label: "Dibatalkan", kelas: "bg-[#9AA0A6] text-white" },
-  selesai: { label: "Selesai", kelas: "bg-[#3B82F6] text-white" },
-  batal_hadir: { label: "Batal Hadir", kelas: "bg-[#9AA0A6] text-white" },
+  menunggu: { label: "Menunggu", kelas: "bg-[#F4FF5B] text-black" },
+  diterima: { label: "Diterima", kelas: "bg-[#68FF5B] text-black" },
+  ditolak: { label: "Ditolak", kelas: "bg-[#EC2727] text-white" },
+  dibatalkan: { label: "Dibatalkan", kelas: "bg-[#EC2727] text-white" },
+  selesai: { label: "Selesai", kelas: "bg-[#68FF5B] text-black" },
+  batal_hadir: { label: "Batal Hadir", kelas: "bg-[#EC2727] text-white" },
 };
 
 function BadgeStatus({ status }: { status: StatusPendaftaran }) {

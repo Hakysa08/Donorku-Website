@@ -540,7 +540,7 @@ export default function BerandaPage() {
               Total Pendonor Hari ini
             </p>
 
-            <p className="mt-3 text-[52px] font-bold leading-none text-red-500">
+            <p className="mt-3 text-[80px] font-bold leading-none text-red-500">
               {totalPendonorHariIni}
             </p>
 
@@ -557,7 +557,7 @@ export default function BerandaPage() {
               Terakhir
             </p>
 
-            <p className="mt-3 text-[52px] font-bold leading-none text-red-500">
+            <p className="mt-3 text-[80px] font-bold leading-none text-red-500">
               {totalPendonorSebulan}
             </p>
 

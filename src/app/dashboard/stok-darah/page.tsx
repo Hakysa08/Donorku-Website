@@ -49,7 +49,7 @@ const STATUS_OPTIONS: { value: StatusStok; label: string }[] = [
 const STATUS_BADGE: Record<StatusStok, string> = {
   aman: "bg-[#68FF5B] text-black",
   menipis: "bg-[#F4FF5B] text-black",
-  kritis: "bg-[#EC2727] text-black",
+  kritis: "bg-[#EC2727] text-white",
 };
 
 const STATUS_LABEL: Record<StatusStok, string> = {

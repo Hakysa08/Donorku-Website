@@ -34,6 +34,34 @@ const GOLONGAN_DARAH = [
 ];
 
 /* =========================================================
+   TANGGAL BERDASARKAN ZONA WAKTU JAKARTA (WIB)
+
+   Tidak peduli timezone server (VPS sering di-set UTC),
+   fungsi ini SELALU menghitung tanggal "hari ini" versi
+   WIB yang benar. Dipakai untuk semua perbandingan tanggal
+   di endpoint ini, supaya "Jadwal Hari Ini" / "Donor Hari
+   Ini" tidak pernah lompat ke hari sebelumnya di jam-jam
+   dini hari WIB.
+========================================================= */
+
+function getTanggalJakarta(acuan: Date = new Date()) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  const parts = formatter.formatToParts(acuan);
+
+  const tahun = Number(parts.find((p) => p.type === "year")?.value);
+  const bulan = Number(parts.find((p) => p.type === "month")?.value);
+  const hari = Number(parts.find((p) => p.type === "day")?.value);
+
+  return { tahun, bulan, hari };
+}
+
+/* =========================================================
    GET DASHBOARD
 ========================================================= */
 
@@ -108,54 +136,42 @@ export async function GET(req: NextRequest) {
     }
 
     /* =====================================================
-       3. RANGE TANGGAL
+       3. RANGE TANGGAL (berbasis WIB, bukan timezone server)
 
        Database menggunakan DATE untuk tanggal_donor dan
-       tanggal_pelaksanaan.
+       tanggal_pelaksanaan, disimpan sebagai UTC midnight
+       dari tanggal kalender yang dimaksud. Jadi batasan
+       hari di sini juga dibentuk sebagai UTC midnight, tapi
+       tanggalnya dihitung berdasarkan WIB dulu.
     ===================================================== */
 
     const sekarang = new Date();
 
-    const hariIni = new Date(
-      sekarang.getFullYear(),
-      sekarang.getMonth(),
-      sekarang.getDate()
-    );
+    const { tahun, bulan, hari } = getTanggalJakarta(sekarang);
 
-    const besok = new Date(
-      sekarang.getFullYear(),
-      sekarang.getMonth(),
-      sekarang.getDate() + 1
-    );
+    const hariIni = new Date(Date.UTC(tahun, bulan - 1, hari));
 
-    const awalTahun = new Date(
-      sekarang.getFullYear(),
-      0,
-      1
-    );
+    const besok = new Date(Date.UTC(tahun, bulan - 1, hari + 1));
 
-    const awalTahunDepan = new Date(
-      sekarang.getFullYear() + 1,
-      0,
-      1
-    );
+    const awalTahun = new Date(Date.UTC(tahun, 0, 1));
+
+    const awalTahunDepan = new Date(Date.UTC(tahun + 1, 0, 1));
 
     /*
-     * "1 bulan terakhir" diartikan sebagai rolling 1 month.
+     * "1 bulan terakhir" diartikan sebagai rolling 1 month,
+     * dihitung dari tanggal WIB hari ini, bukan dari
+     * timestamp mentah server.
      *
      * Contoh:
-     * 31 Juli 2026
+     * 31 Juli 2026 (WIB)
      *       ↓
      * 30 Juni/1 Juli tergantung panjang bulan
      *
      * BUKAN "bulan Juli saja".
      */
 
-    const satuBulanLalu = new Date(sekarang);
-
-    satuBulanLalu.setMonth(
-      satuBulanLalu.getMonth() - 1
-    );
+    const satuBulanLaluDate = new Date(Date.UTC(tahun, bulan - 1, hari));
+    satuBulanLaluDate.setUTCMonth(satuBulanLaluDate.getUTCMonth() - 1);
 
     /* =====================================================
        4. QUERY DATABASE
@@ -226,8 +242,8 @@ export async function GET(req: NextRequest) {
           status_donor: "berhasil",
 
           tanggal_donor: {
-            gte: satuBulanLalu,
-            lte: sekarang,
+            gte: satuBulanLaluDate,
+            lt: besok,
           },
 
           pendonor: {
@@ -258,7 +274,8 @@ export async function GET(req: NextRequest) {
       /* ===================================================
          JADWAL DONOR HARI INI
 
-         Status aktif saja, tanggal pelaksanaan tepat hari ini.
+         Status aktif saja, tanggal pelaksanaan tepat hari
+         ini (versi WIB).
       =================================================== */
 
       prisma.jadwalDonor.findMany({
@@ -324,14 +341,14 @@ export async function GET(req: NextRequest) {
     const donorPerBulan = new Array<number>(12).fill(0);
 
     for (const riwayat of riwayatTahun) {
-      const bulan = riwayat.tanggal_donor.getMonth();
+      const bulanRiwayat = riwayat.tanggal_donor.getUTCMonth();
 
-      donorPerBulan[bulan]++;
+      donorPerBulan[bulanRiwayat]++;
     }
 
     const statistikBulanan = NAMA_BULAN.map(
-      (bulan, index) => ({
-        bulan,
+      (bulanNama, index) => ({
+        bulan: bulanNama,
         jumlah: donorPerBulan[index],
       })
     );
@@ -544,8 +561,7 @@ function hitungUmur(
   if (
     selisihBulan < 0 ||
     (selisihBulan === 0 &&
-      tanggalSekarang.getDate() <
-        tanggalLahir.getDate())
+      tanggalSekarang.getDate() < tanggalLahir.getDate())
   ) {
     umur--;
   }
@@ -568,6 +584,7 @@ function formatTanggal(
     day: "2-digit",
     month: "long",
     year: "numeric",
+    timeZone: "UTC",
   });
 }
 

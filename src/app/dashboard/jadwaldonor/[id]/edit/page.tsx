@@ -2,6 +2,7 @@
 
 "use client";
 
+import DatePickerInput from "@/components/DatePickerInput";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Eye, Save, Trash2 } from "lucide-react";
@@ -48,7 +49,7 @@ const INITIAL_FORM: FormDataJadwal = {
 };
 
 const inputClass =
-  "h-14 w-full rounded-xl border border-gray-200 bg-white px-6 text-lg text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
+  "h-12 w-full rounded-xl border border-gray-200 bg-white px-5 text-base text-gray-800 outline-none transition placeholder:text-gray-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-100";
 
 function Field({
   label,
@@ -61,9 +62,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-2.5 block text-lg font-semibold text-gray-800">
+      <label className="mb-2 block text-sm font-semibold text-gray-700">
         {label}
-        {required && <span className="text-red-500">*</span>}
+        {required && <span className="text-red-500"> *</span>}
       </label>
       {children}
     </div>
@@ -122,6 +123,7 @@ export default function EditJadwalPage() {
   const [error, setError] = useState("");
 
   const [slots, setSlots] = useState<Slot[]>([]);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   const [showKonfirmasiEdit, setShowKonfirmasiEdit] = useState(false);
   const [showKonfirmasiKembali, setShowKonfirmasiKembali] = useState(false);
@@ -257,11 +259,6 @@ export default function EditJadwalPage() {
     });
   }
 
-  /* =======================================================
-     SUBMIT: validasi -> munculkan modal "Konfirmasi Edit"
-     Proses simpan sebenarnya ada di prosesEdit()
-  ======================================================= */
-
   function handleFormSubmit(event: FormEvent) {
     event.preventDefault();
     setError("");
@@ -342,7 +339,6 @@ export default function EditJadwalPage() {
         throw new Error(result.message || "Gagal memperbarui jadwal");
       }
 
-      // setelah sukses -> List, bukan View
       router.push("/dashboard/jadwaldonor");
       router.refresh();
     } catch (err) {
@@ -363,8 +359,8 @@ export default function EditJadwalPage() {
 
   return (
     <div className="min-h-full bg-white px-10 py-7 text-black">
-      <div className="mb-9 flex items-start justify-between">
-        <h1 className="text-[43px] font-bold tracking-tight">
+      <div className="mb-8 flex items-start justify-between">
+        <h1 className="text-[36px] font-bold tracking-tight">
           Edit Jadwal ID {id}
         </h1>
 
@@ -377,15 +373,15 @@ export default function EditJadwalPage() {
             type="submit"
             form="form-edit-jadwal"
             disabled={saving}
-            className="flex h-[53px] items-center gap-2 rounded-full bg-red-500 px-7 text-base font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+            className="flex h-10 items-center gap-2 rounded-full bg-red-600 px-5 text-sm font-medium text-white transition hover:bg-red-500 disabled:opacity-60"
           >
-            <Save size={19} /> {saving ? "Menyimpan..." : "Simpan"}
+            <Save size={16} /> {saving ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="mb-7 rounded-xl bg-red-50 px-5 py-3.5 text-base text-red-600">
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -395,13 +391,12 @@ export default function EditJadwalPage() {
         <Card>
           <div className="grid grid-cols-1 gap-x-10 gap-y-7 md:grid-cols-3">
             <Field label="Hari / Tanggal" required>
-              <input
-                type="date"
-                name="tanggal_pelaksanaan"
+              <DatePickerInput
                 value={form.tanggal_pelaksanaan}
-                onChange={handleChange}
+                onChange={(value) =>
+                  setForm((prev) => ({ ...prev, tanggal_pelaksanaan: value }))
+                }
                 required
-                className={inputClass}
               />
             </Field>
 
@@ -450,7 +445,7 @@ export default function EditJadwalPage() {
                 placeholder="Alamat otomatis terisi setelah memilih lokasi"
                 rows={3}
                 value={lokasiTerpilih?.alamat ?? ""}
-                className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 px-6 py-3.5 text-lg text-black placeholder:text-gray-400 focus:outline-none"
+                className="w-full resize-none rounded-xl border border-gray-200 bg-gray-100 px-5 py-3 text-base text-black placeholder:text-gray-400 focus:outline-none"
               />
             </Field>
 
@@ -570,25 +565,23 @@ export default function EditJadwalPage() {
             className="hidden"
           />
 
-          <label className="mb-2.5 block text-lg font-semibold text-gray-800">
-            Foto
-          </label>
-
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={slots.length >= MAX_FOTO}
-            className="flex h-14 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-lg text-gray-400 transition hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <span className="flex-1 px-5">Pilih Gambar</span>
-            <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-7 text-gray-700">
-              Browse
-            </span>
-          </button>
+          <Field label="Foto" required>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={slots.length >= MAX_FOTO}
+              className="flex h-12 w-full max-w-md items-center rounded-xl border border-gray-200 bg-white text-left text-base text-gray-400 transition hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span className="flex-1 px-5">Pilih Gambar</span>
+              <span className="flex h-full items-center rounded-r-xl border-l border-gray-200 bg-gray-100 px-6 text-sm text-gray-700">
+                Browse
+              </span>
+            </button>
+          </Field>
 
           {slots.length > 0 && (
             <div className="mt-5">
-              <p className="mb-3.5 text-lg font-medium text-gray-800">
+              <p className="mb-3 text-sm font-medium text-gray-700">
                 Preview ({slots.length}/{MAX_FOTO})
               </p>
 
@@ -606,22 +599,22 @@ export default function EditJadwalPage() {
                     />
 
                     <div className="absolute right-2 top-2 flex gap-1.5">
-                      <a
-                        href={slot.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Lihat"
-                        className="flex h-9 w-9 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
-                      >
-                        <Eye size={17} />
-                      </a>
                       <button
                         type="button"
-                        title="Hapus"
-                        onClick={() => hapusFoto(slot.key)}
-                        className="flex h-9 w-9 items-center justify-center rounded-md bg-red-500 text-white shadow hover:bg-red-600"
+                        title="Lihat foto"
+                        onClick={() => setLightboxUrl(slot.url)}
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-white/90 text-gray-700 shadow hover:bg-white"
                       >
-                        <Trash2 size={17} />
+                        <Eye size={16} />
+                      </button>
+
+                      <button
+                        type="button"
+                        title="Hapus foto"
+                        onClick={() => hapusFoto(slot.key)}
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-red-600 text-white shadow hover:bg-red-500"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -630,11 +623,37 @@ export default function EditJadwalPage() {
             </div>
           )}
 
-          <p className="mb-5 mt-2.5 text-sm text-gray-400">
+          <p className="mb-5 mt-3 text-sm text-gray-400">
             Format JPG/JPEG, maksimal {MAX_FOTO} gambar, masing-masing 5 MB.
           </p>
         </Card>
       </form>
+
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <div
+            className="relative max-h-[85vh] w-full max-w-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setLightboxUrl(null)}
+              className="absolute -top-12 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-800 hover:bg-white"
+            >
+              ✕
+            </button>
+
+            <img
+              src={lightboxUrl}
+              alt="Preview foto lokasi"
+              className="aspect-square w-full rounded-2xl bg-black object-contain"
+            />
+          </div>
+        </div>
+      )}
 
       <AskModal
         isOpen={showKonfirmasiEdit}

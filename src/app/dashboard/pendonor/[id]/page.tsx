@@ -520,11 +520,11 @@ function Pilihan({
     <span className="flex items-center gap-1.5">
       <span
         className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-          aktif ? "border-red-600" : "border-gray-300"
+          aktif ? "border-gray-600" : "border-gray-300"
         }`}
       >
         {aktif && (
-          <span className="h-2 w-2 rounded-full bg-red-600" />
+          <span className="h-2 w-2 rounded-full bg-gray-600" />
         )}
       </span>
       <span className="text-xs text-gray-600">{label}</span>

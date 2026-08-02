@@ -8,6 +8,8 @@ type TokenPayload = {
   email: string;
 };
 
+const GOLONGAN_DARAH = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
 /* =========================================================
    VERIFY TOKEN
 ========================================================= */
@@ -67,37 +69,27 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
 
-    const search =
-      searchParams.get("search")?.trim() ?? "";
+    const search = searchParams.get("search")?.trim() ?? "";
 
-    const tanggal =
-      searchParams.get("tanggal") ?? "";
+    const tanggal = searchParams.get("tanggal") ?? "";
 
-    const pageRaw = Number(
-      searchParams.get("page") ?? "1"
-    );
+    const pageRaw = Number(searchParams.get("page") ?? "1");
 
-    const limitRaw = Number(
-      searchParams.get("limit") ?? "8"
-    );
+    const limitRaw = Number(searchParams.get("limit") ?? "8");
 
     /* =====================================================
        VALIDASI PAGE
     ===================================================== */
 
     const page =
-      Number.isInteger(pageRaw) && pageRaw > 0
-        ? pageRaw
-        : 1;
+      Number.isInteger(pageRaw) && pageRaw > 0 ? pageRaw : 1;
 
     /* =====================================================
        VALIDASI LIMIT
     ===================================================== */
 
     const limit =
-      Number.isInteger(limitRaw) &&
-      limitRaw > 0 &&
-      limitRaw <= 50
+      Number.isInteger(limitRaw) && limitRaw > 0 && limitRaw <= 50
         ? limitRaw
         : 8;
 
@@ -171,16 +163,12 @@ export async function GET(req: NextRequest) {
        * 2026-07-31
        */
 
-      const match =
-        /^(\d{4})-(\d{2})-(\d{2})$/.exec(
-          tanggal
-        );
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(tanggal);
 
       if (!match) {
         return NextResponse.json(
           {
-            message:
-              "Format tanggal tidak valid",
+            message: "Format tanggal tidak valid",
           },
           {
             status: 400,
@@ -196,11 +184,7 @@ export async function GET(req: NextRequest) {
        * Validasi tanggal.
        */
 
-      const validasiTanggal = new Date(
-        tahun,
-        bulan - 1,
-        hari
-      );
+      const validasiTanggal = new Date(tahun, bulan - 1, hari);
 
       if (
         validasiTanggal.getFullYear() !== tahun ||
@@ -224,17 +208,9 @@ export async function GET(req: NextRequest) {
        * <  2026-08-01 00:00
        */
 
-      const awalHari = new Date(
-        tahun,
-        bulan - 1,
-        hari
-      );
+      const awalHari = new Date(tahun, bulan - 1, hari);
 
-      const akhirHari = new Date(
-        tahun,
-        bulan - 1,
-        hari + 1
-      );
+      const akhirHari = new Date(tahun, bulan - 1, hari + 1);
 
       AND.push({
         jadwal_donor: {
@@ -311,18 +287,14 @@ export async function GET(req: NextRequest) {
        PAGINATION
     ===================================================== */
 
-    const totalPages = Math.max(
-      1,
-      Math.ceil(total / limit)
-    );
+    const totalPages = Math.max(1, Math.ceil(total / limit));
 
     /* =====================================================
        RESPONSE
     ===================================================== */
 
     return NextResponse.json({
-      message:
-        "Data lokasi berhasil diambil",
+      message: "Data lokasi berhasil diambil",
 
       data: lokasi,
 
@@ -334,20 +306,14 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error(
-      "GET LOKASI ERROR:",
-      error
-    );
+    console.error("GET LOKASI ERROR:", error);
 
     return NextResponse.json(
       {
-        message:
-          "Gagal mengambil data lokasi",
+        message: "Gagal mengambil data lokasi",
 
         error:
-          process.env.NODE_ENV ===
-            "development" &&
-          error instanceof Error
+          process.env.NODE_ENV === "development" && error instanceof Error
             ? error.message
             : undefined,
       },
@@ -363,6 +329,12 @@ export async function GET(req: NextRequest) {
    TAMBAH LOKASI
 
    POST /api/web/auth/dashboard/daftarlokasi
+
+   Setelah lokasi berhasil dibuat, otomatis generate 8 baris
+   stok_darah (satu per golongan darah, jumlah_kantong: 0).
+   Dibungkus $transaction supaya kalau salah satu langkah
+   gagal, dua-duanya dibatalkan (tidak ada lokasi "yatim"
+   tanpa stok).
 ========================================================= */
 
 export async function POST(req: NextRequest) {
@@ -382,29 +354,17 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
 
-    const nama_lokasi = String(
-      formData.get("nama_lokasi") ?? ""
-    ).trim();
+    const nama_lokasi = String(formData.get("nama_lokasi") ?? "").trim();
 
-    const alamat = String(
-      formData.get("alamat") ?? ""
-    ).trim();
+    const alamat = String(formData.get("alamat") ?? "").trim();
 
-    const kota = String(
-      formData.get("kota") ?? ""
-    ).trim();
+    const kota = String(formData.get("kota") ?? "").trim();
 
-    const no_hp = String(
-      formData.get("no_hp") ?? ""
-    ).trim();
+    const no_hp = String(formData.get("no_hp") ?? "").trim();
 
-    const longitudeRaw = String(
-      formData.get("longitude") ?? ""
-    ).trim();
+    const longitudeRaw = String(formData.get("longitude") ?? "").trim();
 
-    const latitudeRaw = String(
-      formData.get("latitude") ?? ""
-    ).trim();
+    const latitudeRaw = String(formData.get("latitude") ?? "").trim();
 
     const foto = formData.get("foto");
 
@@ -412,16 +372,10 @@ export async function POST(req: NextRequest) {
        VALIDASI
     ===================================================== */
 
-    if (
-      !nama_lokasi ||
-      !alamat ||
-      !kota ||
-      !no_hp
-    ) {
+    if (!nama_lokasi || !alamat || !kota || !no_hp) {
       return NextResponse.json(
         {
-          message:
-            "Nama lokasi, alamat, kota, dan nomor HP wajib diisi",
+          message: "Nama lokasi, alamat, kota, dan nomor HP wajib diisi",
         },
         { status: 400 }
       );
@@ -430,8 +384,7 @@ export async function POST(req: NextRequest) {
     if (!longitudeRaw || !latitudeRaw) {
       return NextResponse.json(
         {
-          message:
-            "Longitude dan latitude wajib diisi",
+          message: "Longitude dan latitude wajib diisi",
         },
         { status: 400 }
       );
@@ -440,14 +393,10 @@ export async function POST(req: NextRequest) {
     const longitude = Number(longitudeRaw);
     const latitude = Number(latitudeRaw);
 
-    if (
-      !Number.isFinite(longitude) ||
-      !Number.isFinite(latitude)
-    ) {
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
       return NextResponse.json(
         {
-          message:
-            "Longitude dan latitude harus berupa angka",
+          message: "Longitude dan latitude harus berupa angka",
         },
         { status: 400 }
       );
@@ -456,8 +405,7 @@ export async function POST(req: NextRequest) {
     if (longitude < -180 || longitude > 180) {
       return NextResponse.json(
         {
-          message:
-            "Longitude harus berada antara -180 sampai 180",
+          message: "Longitude harus berada antara -180 sampai 180",
         },
         { status: 400 }
       );
@@ -466,8 +414,7 @@ export async function POST(req: NextRequest) {
     if (latitude < -90 || latitude > 90) {
       return NextResponse.json(
         {
-          message:
-            "Latitude harus berada antara -90 sampai 90",
+          message: "Latitude harus berada antara -90 sampai 90",
         },
         { status: 400 }
       );
@@ -480,14 +427,10 @@ export async function POST(req: NextRequest) {
     let fotoFile: File | null = null;
 
     if (foto instanceof File && foto.size > 0) {
-      if (
-        foto.type !== "image/jpeg" &&
-        foto.type !== "image/jpg"
-      ) {
+      if (foto.type !== "image/jpeg" && foto.type !== "image/jpg") {
         return NextResponse.json(
           {
-            message:
-              "Foto lokasi harus berformat JPG/JPEG",
+            message: "Foto lokasi harus berformat JPG/JPEG",
           },
           { status: 400 }
         );
@@ -497,8 +440,7 @@ export async function POST(req: NextRequest) {
       if (foto.size > 5 * 1024 * 1024) {
         return NextResponse.json(
           {
-            message:
-              "Ukuran foto maksimal 5 MB",
+            message: "Ukuran foto maksimal 5 MB",
           },
           { status: 400 }
         );
@@ -508,11 +450,12 @@ export async function POST(req: NextRequest) {
     }
 
     /* =====================================================
-       INSERT DATABASE DULU
+       INSERT LOKASI + AUTO-GENERATE STOK DARAH
+       (dibungkus transaction)
     ===================================================== */
 
-    const lokasi =
-      await prisma.lokasiDonor.create({
+    const lokasi = await prisma.$transaction(async (tx) => {
+      const lokasiBaru = await tx.lokasiDonor.create({
         data: {
           id_admin: admin.id_admin,
           nama_lokasi,
@@ -533,6 +476,18 @@ export async function POST(req: NextRequest) {
           latitude: true,
         },
       });
+
+      await tx.stokDarah.createMany({
+        data: GOLONGAN_DARAH.map((golongan) => ({
+          id_admin: admin.id_admin,
+          id_lokasi: lokasiBaru.id_lokasi,
+          golongan_darah: golongan,
+          jumlah_kantong: 0,
+        })),
+      });
+
+      return lokasiBaru;
+    });
 
     /* =====================================================
        SIMPAN FOTO
@@ -558,46 +513,32 @@ export async function POST(req: NextRequest) {
         recursive: true,
       });
 
-      const bytes =
-        await fotoFile.arrayBuffer();
+      const bytes = await fotoFile.arrayBuffer();
 
       const buffer = Buffer.from(bytes);
 
-      const filePath = path.join(
-        uploadDir,
-        `${lokasi.id_lokasi}.jpg`
-      );
+      const filePath = path.join(uploadDir, `${lokasi.id_lokasi}.jpg`);
 
-      await fs.writeFile(
-        filePath,
-        buffer
-      );
+      await fs.writeFile(filePath, buffer);
     }
 
     return NextResponse.json(
       {
-        message:
-          "Lokasi berhasil ditambahkan",
+        message: "Lokasi berhasil ditambahkan",
 
         data: lokasi,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error(
-      "CREATE LOKASI ERROR:",
-      error
-    );
+    console.error("CREATE LOKASI ERROR:", error);
 
     return NextResponse.json(
       {
-        message:
-          "Gagal menambahkan lokasi",
+        message: "Gagal menambahkan lokasi",
 
         error:
-          process.env.NODE_ENV ===
-            "development" &&
-          error instanceof Error
+          process.env.NODE_ENV === "development" && error instanceof Error
             ? error.message
             : undefined,
       },

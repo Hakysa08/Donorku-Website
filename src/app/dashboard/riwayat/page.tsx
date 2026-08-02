@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Eye, Search, Trash2, X } from "lucide-react";
 import { format } from "date-fns";
+import * as XLSX from "xlsx";
 import AskModal from "@/components/AskModal";
 import DateFilter from "@/components/DateFilter";
 
@@ -223,10 +224,10 @@ export default function RiwayatDonorPage() {
   }
 
   /* =======================================================
-     EKSPOR CSV
+     EKSPOR EXCEL
   ======================================================= */
 
-  async function eksporCSV() {
+  async function eksporExcel() {
     try {
       setEkspor(true);
 
@@ -277,7 +278,7 @@ export default function RiwayatDonorPage() {
         item.lokasi_donor,
       ]);
 
-      unduhCSV([header, ...isi], "riwayat-donor.csv");
+      unduhExcel([header, ...isi], "riwayat-donor.xlsx");
     } catch (err) {
       alert(
         err instanceof Error ? err.message : "Gagal mengekspor data"
@@ -342,7 +343,7 @@ export default function RiwayatDonorPage() {
           {/* EKSPOR KE EXCEL */}
           <button
             type="button"
-            onClick={eksporCSV}
+            onClick={eksporExcel}
             disabled={ekspor}
             className="flex h-[52px] items-center gap-2 rounded-2xl border border-gray-200 bg-white px-5 text-[13px] font-medium text-black shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
           >
@@ -541,36 +542,14 @@ export default function RiwayatDonorPage() {
 }
 
 /* =========================================================
-   EKSPOR CSV
+   EKSPOR EXCEL
 ========================================================= */
 
-function unduhCSV(baris: (string | number)[][], namaFile: string) {
-  const konten = baris
-    .map((kolom) =>
-      kolom
-        .map((sel) => {
-          const teks = String(sel ?? "");
-          if (/[",\n]/.test(teks)) {
-            return `"${teks.replace(/"/g, '""')}"`;
-          }
-          return teks;
-        })
-        .join(",")
-    )
-    .join("\n");
-
-  const blob = new Blob(["\uFEFF" + konten], {
-    type: "text/csv;charset=utf-8;",
-  });
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = namaFile;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+function unduhExcel(baris: (string | number)[][], namaFile: string) {
+  const worksheet = XLSX.utils.aoa_to_sheet(baris);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Riwayat Donor");
+  XLSX.writeFile(workbook, namaFile);
 }
 
 /* =========================================================
