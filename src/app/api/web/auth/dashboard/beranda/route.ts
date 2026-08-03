@@ -8,41 +8,13 @@ type TokenPayload = {
 };
 
 const NAMA_BULAN = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mei",
-  "Jun",
-  "Jul",
-  "Agu",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Des",
+  "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+  "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
 ];
 
 const GOLONGAN_DARAH = [
-  "A+",
-  "A-",
-  "B+",
-  "B-",
-  "AB+",
-  "AB-",
-  "O+",
-  "O-",
+  "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-",
 ];
-
-/* =========================================================
-   TANGGAL BERDASARKAN ZONA WAKTU JAKARTA (WIB)
-
-   Tidak peduli timezone server (VPS sering di-set UTC),
-   fungsi ini SELALU menghitung tanggal "hari ini" versi
-   WIB yang benar. Dipakai untuk semua perbandingan tanggal
-   di endpoint ini, supaya "Jadwal Hari Ini" / "Donor Hari
-   Ini" tidak pernah lompat ke hari sebelumnya di jam-jam
-   dini hari WIB.
-========================================================= */
 
 function getTanggalJakarta(acuan: Date = new Date()) {
   const formatter = new Intl.DateTimeFormat("en-CA", {
@@ -61,61 +33,24 @@ function getTanggalJakarta(acuan: Date = new Date()) {
   return { tahun, bulan, hari };
 }
 
-/* =========================================================
-   GET DASHBOARD
-========================================================= */
-
 export async function GET(req: NextRequest) {
   try {
-    /* =====================================================
-       1. AUTENTIKASI ADMIN
-
-       Token hanya digunakan untuk mengetahui admin yang
-       sedang login.
-
-       Data statistik TIDAK difilter berdasarkan id_admin.
-    ===================================================== */
-
     const token = req.cookies.get("token")?.value;
 
     if (!token) {
-      return NextResponse.json(
-        {
-          message: "Belum login",
-        },
-        {
-          status: 401,
-        }
-      );
+      return NextResponse.json({ message: "Belum login" }, { status: 401 });
     }
 
     let decoded: TokenPayload;
 
     try {
-      decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET!
-      ) as TokenPayload;
+      decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
     } catch {
-      return NextResponse.json(
-        {
-          message: "Token tidak valid",
-        },
-        {
-          status: 401,
-        }
-      );
+      return NextResponse.json({ message: "Token tidak valid" }, { status: 401 });
     }
 
-    /* =====================================================
-       2. DATA ADMIN
-    ===================================================== */
-
     const admin = await prisma.admin.findUnique({
-      where: {
-        id_admin: decoded.id_admin,
-      },
-
+      where: { id_admin: decoded.id_admin },
       select: {
         id_admin: true,
         nama_admin: true,
@@ -125,82 +60,37 @@ export async function GET(req: NextRequest) {
     });
 
     if (!admin) {
-      return NextResponse.json(
-        {
-          message: "Admin tidak ditemukan",
-        },
-        {
-          status: 404,
-        }
-      );
+      return NextResponse.json({ message: "Admin tidak ditemukan" }, { status: 404 });
     }
 
-    /* =====================================================
-       3. RANGE TANGGAL (berbasis WIB, bukan timezone server)
-
-       Database menggunakan DATE untuk tanggal_donor dan
-       tanggal_pelaksanaan, disimpan sebagai UTC midnight
-       dari tanggal kalender yang dimaksud. Jadi batasan
-       hari di sini juga dibentuk sebagai UTC midnight, tapi
-       tanggalnya dihitung berdasarkan WIB dulu.
-    ===================================================== */
-
     const sekarang = new Date();
-
     const { tahun, bulan, hari } = getTanggalJakarta(sekarang);
 
     const hariIni = new Date(Date.UTC(tahun, bulan - 1, hari));
-
     const besok = new Date(Date.UTC(tahun, bulan - 1, hari + 1));
-
     const awalTahun = new Date(Date.UTC(tahun, 0, 1));
-
     const awalTahunDepan = new Date(Date.UTC(tahun + 1, 0, 1));
-
-    /*
-     * "1 bulan terakhir" diartikan sebagai rolling 1 month,
-     * dihitung dari tanggal WIB hari ini, bukan dari
-     * timestamp mentah server.
-     *
-     * Contoh:
-     * 31 Juli 2026 (WIB)
-     *       ↓
-     * 30 Juni/1 Juli tergantung panjang bulan
-     *
-     * BUKAN "bulan Juli saja".
-     */
 
     const satuBulanLaluDate = new Date(Date.UTC(tahun, bulan - 1, hari));
     satuBulanLaluDate.setUTCMonth(satuBulanLaluDate.getUTCMonth() - 1);
 
-    /* =====================================================
-       4. QUERY DATABASE
-    ===================================================== */
-
     const [
       riwayatTahun,
-      riwayatHariIni,
-      riwayatSebulan,
+      pendaftaranHariIni,
+      pendaftaranSebulan,
       stokGroup,
       jadwalHariIni,
       pendonorAktif,
     ] = await Promise.all([
       /* ===================================================
          STATISTIK DONOR TAHUN INI
-
          Hanya donor BERHASIL.
       =================================================== */
-
       prisma.riwayatDonor.findMany({
         where: {
           status_donor: "berhasil",
-
-          tanggal_donor: {
-            gte: awalTahun,
-            lt: awalTahunDepan,
-          },
+          tanggal_donor: { gte: awalTahun, lt: awalTahunDepan },
         },
-
         select: {
           id_riwayat: true,
           id_pendonor: true,
@@ -211,83 +101,59 @@ export async function GET(req: NextRequest) {
       /* ===================================================
          PENDONOR HARI INI
 
-         Ambil ID pendonor donor berhasil hari ini.
+         Diambil dari Pendaftaran, berdasarkan tanggal
+         pelaksanaan jadwal (versi WIB). Pendaftaran yang
+         dibatalkan/ditolak tidak dihitung.
       =================================================== */
-
-      prisma.riwayatDonor.findMany({
+      prisma.pendaftaran.findMany({
         where: {
-          status_donor: "berhasil",
-
-          tanggal_donor: {
-            gte: hariIni,
-            lt: besok,
+          jadwal: {
+            tanggal_pelaksanaan: { gte: hariIni, lt: besok },
           },
-
-          pendonor: {
-            is_deleted: false,
+          status_pendaftaran: {
+            notIn: ["dibatalkan", "ditolak"],
           },
+          pendonor: { is_deleted: false },
         },
-
-        select: {
-          id_pendonor: true,
-        },
+        select: { id_pendonor: true },
       }),
 
       /* ===================================================
          PENDONOR 1 BULAN TERAKHIR
+
+         Diambil dari Pendaftaran, konsisten dengan
+         "Pendonor Hari Ini". Pendaftaran yang
+         dibatalkan/ditolak tidak dihitung.
       =================================================== */
-
-      prisma.riwayatDonor.findMany({
+      prisma.pendaftaran.findMany({
         where: {
-          status_donor: "berhasil",
-
-          tanggal_donor: {
-            gte: satuBulanLaluDate,
-            lt: besok,
+          jadwal: {
+            tanggal_pelaksanaan: { gte: satuBulanLaluDate, lt: besok },
           },
-
-          pendonor: {
-            is_deleted: false,
+          status_pendaftaran: {
+            notIn: ["dibatalkan", "ditolak"],
           },
+          pendonor: { is_deleted: false },
         },
-
-        select: {
-          id_pendonor: true,
-        },
+        select: { id_pendonor: true },
       }),
 
       /* ===================================================
          TOTAL STOK DARAH SEMUA CABANG
-
-         Prisma melakukan GROUP BY golongan darah dan SUM
-         langsung di database.
       =================================================== */
-
       prisma.stokDarah.groupBy({
         by: ["golongan_darah"],
-
-        _sum: {
-          jumlah_kantong: true,
-        },
+        _sum: { jumlah_kantong: true },
       }),
 
       /* ===================================================
          JADWAL DONOR HARI INI
-
-         Status aktif saja, tanggal pelaksanaan tepat hari
-         ini (versi WIB).
       =================================================== */
-
       prisma.jadwalDonor.findMany({
         where: {
           status_jadwal: "aktif",
-
-          tanggal_pelaksanaan: {
-            gte: hariIni,
-            lt: besok,
-          },
+          tanggal_pelaksanaan: { gte: hariIni, lt: besok },
         },
-
         select: {
           id_jadwal: true,
           tanggal_pelaksanaan: true,
@@ -295,7 +161,6 @@ export async function GET(req: NextRequest) {
           jam_selesai: true,
           kuota: true,
           pendonor_hadir: true,
-
           lokasi: {
             select: {
               nama_lokasi: true,
@@ -304,161 +169,82 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-
-        orderBy: {
-          jam_mulai: "asc",
-        },
-
+        orderBy: { jam_mulai: "asc" },
         take: 4,
       }),
 
       /* ===================================================
          PENDONOR AKTIF
-
-         Soft deleted tidak dimasukkan ke statistik usia.
       =================================================== */
-
       prisma.pendonor.findMany({
-        where: {
-          is_deleted: false,
-        },
-
-        select: {
-          id_pendonor: true,
-          tanggal_lahir: true,
-        },
+        where: { is_deleted: false },
+        select: { id_pendonor: true, tanggal_lahir: true },
       }),
     ]);
 
     /* =====================================================
-       5. STATISTIK DONOR BULANAN
-
-       1 RiwayatDonor BERHASIL = 1 aktivitas donor.
-
-       Grafik ini menghitung DONASI, bukan jumlah orang unik.
+       STATISTIK DONOR BULANAN
     ===================================================== */
-
     const donorPerBulan = new Array<number>(12).fill(0);
 
     for (const riwayat of riwayatTahun) {
       const bulanRiwayat = riwayat.tanggal_donor.getUTCMonth();
-
       donorPerBulan[bulanRiwayat]++;
     }
 
-    const statistikBulanan = NAMA_BULAN.map(
-      (bulanNama, index) => ({
-        bulan: bulanNama,
-        jumlah: donorPerBulan[index],
-      })
-    );
+    const statistikBulanan = NAMA_BULAN.map((bulanNama, index) => ({
+      bulan: bulanNama,
+      jumlah: donorPerBulan[index],
+    }));
 
     /* =====================================================
-       6. TOTAL PENDONOR HARI INI
-
-       Karena label interface adalah "Pendonor", kita hitung
-       ORANG UNIK.
-
-       Orang yang sama tidak dihitung dua kali.
+       TOTAL PENDONOR HARI INI
     ===================================================== */
-
     const totalPendonorHariIni = new Set(
-      riwayatHariIni.map(
-        (riwayat) => riwayat.id_pendonor
-      )
+      pendaftaranHariIni.map((pendaftaran) => pendaftaran.id_pendonor)
     ).size;
 
     /* =====================================================
-       7. TOTAL PENDONOR 1 BULAN TERAKHIR
-
-       Sama: DISTINCT id_pendonor.
+       TOTAL PENDONOR 1 BULAN TERAKHIR
     ===================================================== */
-
     const totalPendonorSebulan = new Set(
-      riwayatSebulan.map(
-        (riwayat) => riwayat.id_pendonor
-      )
+      pendaftaranSebulan.map((pendaftaran) => pendaftaran.id_pendonor)
     ).size;
 
     /* =====================================================
-       8. TOTAL STOK PER GOLONGAN DARAH
+       TOTAL STOK PER GOLONGAN DARAH
     ===================================================== */
+    const ringkasanStok = GOLONGAN_DARAH.map((golonganDarah) => {
+      const hasil = stokGroup.find((stok) => stok.golongan_darah === golonganDarah);
+      const jumlah = hasil?._sum.jumlah_kantong ?? 0;
 
-    const ringkasanStok = GOLONGAN_DARAH.map(
-      (golonganDarah) => {
-        const hasil = stokGroup.find(
-          (stok) =>
-            stok.golongan_darah === golonganDarah
-        );
+      let status = "Stok aman";
 
-        const jumlah =
-          hasil?._sum.jumlah_kantong ?? 0;
-
-        /*
-         * PERHATIAN:
-         *
-         * Threshold ini hanya untuk visual status.
-         * Tidak mempengaruhi jumlah stok.
-         *
-         * Kalau project punya aturan minimum stok sendiri,
-         * ubah threshold ini.
-         */
-
-        let status = "Stok aman";
-        
-        if (jumlah <= 1000) {
-          status = "Stok kritis";
-        } else if (jumlah <= 2500) {
-          status = "Stok menipis";
-        }
-
-        return {
-          golonganDarah,
-          jumlah,
-          status,
-        };
+      if (jumlah <= 1000) {
+        status = "Stok kritis";
+      } else if (jumlah <= 2500) {
+        status = "Stok menipis";
       }
-    );
+
+      return { golonganDarah, jumlah, status };
+    });
 
     /* =====================================================
-       9. JADWAL DONOR HARI INI
+       JADWAL DONOR HARI INI
     ===================================================== */
-
-    const donorHariIni = jadwalHariIni.map(
-      (jadwal) => ({
-        id: jadwal.id_jadwal,
-
-        lokasi:
-          jadwal.lokasi.nama_lokasi,
-
-        alamat: [
-          jadwal.lokasi.alamat,
-          jadwal.lokasi.kota,
-        ]
-          .filter(Boolean)
-          .join(", "),
-
-        tanggal: formatTanggal(
-          jadwal.tanggal_pelaksanaan
-        ),
-
-        waktu: `${formatJam(
-          jadwal.jam_mulai
-        )} - ${formatJam(
-          jadwal.jam_selesai
-        )}`,
-
-        kuota: jadwal.kuota,
-
-        pendonorHadir:
-          jadwal.pendonor_hadir ?? 0,
-      })
-    );
+    const donorHariIni = jadwalHariIni.map((jadwal) => ({
+      id: jadwal.id_jadwal,
+      lokasi: jadwal.lokasi.nama_lokasi,
+      alamat: [jadwal.lokasi.alamat, jadwal.lokasi.kota].filter(Boolean).join(", "),
+      tanggal: formatTanggal(jadwal.tanggal_pelaksanaan),
+      waktu: `${formatJam(jadwal.jam_mulai)} - ${formatJam(jadwal.jam_selesai)}`,
+      kuota: jadwal.kuota,
+      pendonorHadir: jadwal.pendonor_hadir ?? 0,
+    }));
 
     /* =====================================================
-       10. DISTRIBUSI USIA PENDONOR
+       DISTRIBUSI USIA PENDONOR
     ===================================================== */
-
     const kelompokUsia: Record<string, number> = {
       "17 - 25": 0,
       "26 - 35": 0,
@@ -467,15 +253,7 @@ export async function GET(req: NextRequest) {
     };
 
     for (const pendonor of pendonorAktif) {
-      const umur = hitungUmur(
-        pendonor.tanggal_lahir,
-        sekarang
-      );
-
-      /*
-       * <17 tidak dimasukkan ke chart karena secara
-       * definisi kelompok dashboard dimulai dari 17.
-       */
+      const umur = hitungUmur(pendonor.tanggal_lahir, sekarang);
 
       if (umur >= 17 && umur <= 25) {
         kelompokUsia["17 - 25"]++;
@@ -488,36 +266,20 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const usiaPendonor = Object.entries(
-      kelompokUsia
-    ).map(([rentang, jumlah]) => ({
+    const usiaPendonor = Object.entries(kelompokUsia).map(([rentang, jumlah]) => ({
       rentang,
       jumlah,
     }));
 
-    /* =====================================================
-       11. RESPONSE FINAL
-
-       page.tsx TIDAK melakukan perhitungan lagi.
-       Ia hanya menampilkan object ini.
-    ===================================================== */
-
     return NextResponse.json({
       message: "Data dashboard berhasil diambil",
-
       data: {
         admin,
-
         statistikBulanan,
-
         ringkasanStok,
-
         donorHariIni,
-
         totalPendonorHariIni,
-
         totalPendonorSebulan,
-
         usiaPendonor,
       },
     });
@@ -527,7 +289,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         message: "Gagal mengambil data dashboard",
-
         error:
           process.env.NODE_ENV === "development"
             ? error instanceof Error
@@ -535,33 +296,18 @@ export async function GET(req: NextRequest) {
               : String(error)
             : undefined,
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
 
-/* =========================================================
-   HITUNG UMUR
-========================================================= */
-
-function hitungUmur(
-  tanggalLahir: Date,
-  tanggalSekarang: Date
-) {
-  let umur =
-    tanggalSekarang.getFullYear() -
-    tanggalLahir.getFullYear();
-
-  const selisihBulan =
-    tanggalSekarang.getMonth() -
-    tanggalLahir.getMonth();
+function hitungUmur(tanggalLahir: Date, tanggalSekarang: Date) {
+  let umur = tanggalSekarang.getFullYear() - tanggalLahir.getFullYear();
+  const selisihBulan = tanggalSekarang.getMonth() - tanggalLahir.getMonth();
 
   if (
     selisihBulan < 0 ||
-    (selisihBulan === 0 &&
-      tanggalSekarang.getDate() < tanggalLahir.getDate())
+    (selisihBulan === 0 && tanggalSekarang.getDate() < tanggalLahir.getDate())
   ) {
     umur--;
   }
@@ -569,16 +315,8 @@ function hitungUmur(
   return umur;
 }
 
-/* =========================================================
-   FORMAT TANGGAL
-========================================================= */
-
-function formatTanggal(
-  tanggal: Date | null
-) {
-  if (!tanggal) {
-    return "-";
-  }
+function formatTanggal(tanggal: Date | null) {
+  if (!tanggal) return "-";
 
   return tanggal.toLocaleDateString("id-ID", {
     day: "2-digit",
@@ -587,10 +325,6 @@ function formatTanggal(
     timeZone: "UTC",
   });
 }
-
-/* =========================================================
-   FORMAT JAM
-========================================================= */
 
 function formatJam(jam: Date) {
   return jam.toLocaleTimeString("id-ID", {
