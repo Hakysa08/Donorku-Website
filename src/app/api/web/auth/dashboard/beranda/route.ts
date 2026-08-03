@@ -405,10 +405,10 @@ export async function GET(req: NextRequest) {
          */
 
         let status = "Stok aman";
-
-        if (jumlah <= 150) {
+        
+        if (jumlah <= 1000) {
           status = "Stok kritis";
-        } else if (jumlah <= 300) {
+        } else if (jumlah <= 2500) {
           status = "Stok menipis";
         }
 

@@ -16,10 +16,7 @@ import {
   YAxis,
 } from "recharts";
 
-import {
-  Clock,
-  MapPin,
-} from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 
 /* =========================================================
    TYPES
@@ -65,12 +62,7 @@ type DashboardData = {
    KONSTANTA
 ========================================================= */
 
-const WARNA_DONUT = [
-  "#F49A9A",
-  "#EF7474",
-  "#F15454",
-  "#F22626",
-];
+const WARNA_DONUT = ["#F49A9A", "#EF7474", "#F15454", "#F22626"];
 
 /* =========================================================
    ICON GOLONGAN DARAH
@@ -100,18 +92,21 @@ function KartuStok({
   jumlah: number;
   status: string;
 }) {
-  const aktif = status !== "Stok aman";
+  const kritis = status === "Stok kritis";
+  const menipis = status === "Stok menipis";
+
+  const kelasWarna = kritis
+    ? "border-red-500 bg-red-500 text-white"
+    : menipis
+    ? "border-[#E94545] bg-[#E94545] text-white"
+    : "border-gray-200 bg-white text-gray-900";
 
   return (
     <div
-      className={`flex min-h-[78px] items-center gap-3 rounded-xl border px-4 py-3 ${
-        aktif
-          ? "border-red-500 bg-red-500 text-white"
-          : "border-gray-200 bg-white text-gray-900"
-      }`}
+      className={`flex min-h-[78px] items-center gap-3 rounded-xl border px-4 py-3 ${kelasWarna}`}
     >
       <img
-        src={ikonStok(golonganDarah, aktif)}
+        src={ikonStok(golonganDarah, kritis || menipis)}
         alt={golonganDarah}
         className="h-12 w-12 shrink-0 object-contain"
       />
@@ -119,22 +114,16 @@ function KartuStok({
       <div className="min-w-0 flex-1">
         <p className="whitespace-nowrap text-[22px] font-bold leading-none">
           {jumlah}
-
-          <span className="ml-1 text-[12px] font-normal">
-            kantong
-          </span>
+          <span className="ml-1 text-[12px] font-normal">kantong</span>
         </p>
 
         <div className="mt-2 flex items-center gap-1.5">
           <span
             className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-              aktif ? "bg-white" : "bg-gray-900"
+              kritis || menipis ? "bg-white" : "bg-gray-900"
             }`}
           />
-
-          <span className="text-[12px]">
-            {status}
-          </span>
+          <span className="text-[12px]">{status}</span>
         </div>
       </div>
     </div>
@@ -145,18 +134,13 @@ function KartuStok({
    TOMBOL LIHAT SEMUA
 ========================================================= */
 
-function TombolLihatSemua({
-  href,
-}: {
-  href: string;
-}) {
+function TombolLihatSemua({ href }: { href: string }) {
   return (
     <Link
       href={href}
       className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full bg-red-500 px-4 text-[12px] font-semibold text-white transition-colors hover:bg-red-600"
     >
       Lihat Semua
-
       <img src="/button/seeall.png" alt="Lihat Semua" className="h-3.5 w-3.5" />
     </Link>
   );
@@ -167,66 +151,37 @@ function TombolLihatSemua({
 ========================================================= */
 
 export default function BerandaPage() {
-  const [data, setData] =
-    useState<DashboardData | null>(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
-
-  /* =======================================================
-     FETCH DASHBOARD
-  ======================================================= */
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function ambilDashboard() {
       try {
-        const response = await fetch(
-          "/api/web/auth/dashboard/beranda",
-          {
-            method: "GET",
-            cache: "no-store",
-            credentials: "include",
-          }
-        );
+        const response = await fetch("/api/web/auth/dashboard/beranda", {
+          method: "GET",
+          cache: "no-store",
+          credentials: "include",
+        });
 
-        const contentType =
-          response.headers.get("content-type");
+        const contentType = response.headers.get("content-type");
 
-        if (
-          !contentType?.includes(
-            "application/json"
-          )
-        ) {
+        if (!contentType?.includes("application/json")) {
           throw new Error(
             `API tidak mengembalikan JSON (${response.status})`
           );
         }
 
-        const result =
-          await response.json();
+        const result = await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            result.message ||
-              `HTTP Error ${response.status}`
-          );
+          throw new Error(result.message || `HTTP Error ${response.status}`);
         }
 
         setData(result.data);
       } catch (err) {
-        console.error(
-          "Dashboard Fetch Error:",
-          err
-        );
-
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Terjadi kesalahan"
-        );
+        console.error("Dashboard Fetch Error:", err);
+        setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       } finally {
         setLoading(false);
       }
@@ -235,48 +190,29 @@ export default function BerandaPage() {
     ambilDashboard();
   }, []);
 
-  /* =======================================================
-     LOADING
-  ======================================================= */
-
   if (loading) {
     return (
       <div className="flex min-h-[600px] items-center justify-center">
         <div className="text-center">
           <div className="mx-auto h-9 w-9 animate-spin rounded-full border-4 border-gray-200 border-t-red-500" />
-
-          <p className="mt-3 text-sm text-gray-400">
-            Memuat Beranda...
-          </p>
+          <p className="mt-3 text-sm text-gray-400">Memuat Beranda...</p>
         </div>
       </div>
     );
   }
-
-  /* =======================================================
-     ERROR
-  ======================================================= */
 
   if (error || !data) {
     return (
       <div className="flex min-h-[600px] items-center justify-center">
         <div className="rounded-xl border border-red-100 bg-red-50 px-6 py-5 text-center">
-          <p className="font-semibold text-red-500">
-            Dashboard gagal dimuat
-          </p>
-
+          <p className="font-semibold text-red-500">Dashboard gagal dimuat</p>
           <p className="mt-1 text-xs text-red-400">
-            {error ||
-              "Data dashboard tidak ditemukan"}
+            {error || "Data dashboard tidak ditemukan"}
           </p>
         </div>
       </div>
     );
   }
-
-  /* =======================================================
-     DATA
-  ======================================================= */
 
   const {
     admin,
@@ -288,27 +224,17 @@ export default function BerandaPage() {
     usiaPendonor,
   } = data;
 
-  const namaAdmin =
-    admin.nama_admin
-      ?.trim()
-      .split(" ")[0] || "Admin";
+  const namaAdmin = admin.nama_admin?.trim().split(" ")[0] || "Admin";
 
   const tanggalHariIni =
     donorHariIni.length > 0
       ? donorHariIni[0].tanggal
-      : new Date().toLocaleDateString(
-          "id-ID",
-          {
-            weekday: "long",
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          }
-        );
-
-  /* =======================================================
-     RENDER
-  ======================================================= */
+      : new Date().toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
 
   return (
     <div className="min-h-full bg-white px-10 py-7">
@@ -331,12 +257,11 @@ export default function BerandaPage() {
       =================================================== */}
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-
         {/* =================================================
             STATISTIK
         ================================================= */}
 
-        <section className="min-h-[330px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-5">
+        <section className="min-h-[330px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-6">
           <div className="flex items-center justify-between">
             <h2 className="text-[16px] font-semibold text-gray-900">
               Statistik
@@ -344,38 +269,23 @@ export default function BerandaPage() {
 
             <div className="flex items-center gap-1.5 text-[12px] text-gray-900">
               <span className="h-2 w-2 rounded-full bg-gray-900" />
-
               <span>Donor</span>
             </div>
           </div>
 
           <div className="mt-3 h-[250px]">
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
+            <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={statistikBulanan}
-                margin={{
-                  top: 10,
-                  right: 10,
-                  bottom: 0,
-                  left: -8,
-                }}
+                margin={{ top: 10, right: 10, bottom: 0, left: -8 }}
               >
-                <CartesianGrid
-                  stroke="#eeeeee"
-                  vertical={false}
-                />
+                <CartesianGrid stroke="#eeeeee" vertical={false} />
 
                 <XAxis
                   dataKey="bulan"
                   axisLine={false}
                   tickLine={false}
-                  tick={{
-                    fontSize: 11,
-                    fill: "#777777",
-                  }}
+                  tick={{ fontSize: 11, fill: "#777777" }}
                   dy={8}
                 />
 
@@ -384,26 +294,17 @@ export default function BerandaPage() {
                   tickLine={false}
                   allowDecimals={false}
                   width={45}
-                  tick={{
-                    fontSize: 11,
-                    fill: "#888888",
-                  }}
+                  tick={{ fontSize: 11, fill: "#888888" }}
                 />
 
                 <Tooltip
-                  cursor={{
-                    stroke: "#eeeeee",
-                  }}
+                  cursor={{ stroke: "#eeeeee" }}
                   contentStyle={{
-                    border:
-                      "1px solid #eeeeee",
+                    border: "1px solid #eeeeee",
                     borderRadius: "10px",
                     fontSize: "13px",
                   }}
-                  formatter={(value) => [
-                    `${value} donor`,
-                    "Jumlah",
-                  ]}
+                  formatter={(value) => [`${value} donor`, "Jumlah"]}
                 />
 
                 <Line
@@ -412,9 +313,7 @@ export default function BerandaPage() {
                   stroke="#FF2B31"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{
-                    r: 4,
-                  }}
+                  activeDot={{ r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -425,7 +324,7 @@ export default function BerandaPage() {
             TOTAL STOK DARAH
         ================================================= */}
 
-        <section className="min-h-[330px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-7">
+        <section className="min-h-[330px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-6">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-[16px] font-semibold text-gray-900">
               Total Stok Darah Dari Semua Cabang
@@ -435,16 +334,9 @@ export default function BerandaPage() {
           </div>
 
           <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {ringkasanStok.map(
-              (item) => (
-                <KartuStok
-                  key={
-                    item.golonganDarah
-                  }
-                  {...item}
-                />
-              )
-            )}
+            {ringkasanStok.map((item) => (
+              <KartuStok key={item.golonganDarah} {...item} />
+            ))}
           </div>
         </section>
 
@@ -452,7 +344,7 @@ export default function BerandaPage() {
             DONOR HARI INI
         ================================================= */}
 
-        <section className="min-h-[320px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-5">
+        <section className="min-h-[320px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-[16px] font-semibold text-gray-900">
               Donor Hari Ini
@@ -467,170 +359,128 @@ export default function BerandaPage() {
             </div>
           </div>
 
-          {donorHariIni.length ===
-          0 ? (
+          {donorHariIni.length === 0 ? (
             <div className="mt-5 flex h-[200px] items-center justify-center rounded-xl border border-dashed border-gray-200">
               <p className="text-sm text-gray-400">
-                Tidak ada jadwal donor
-                hari ini
+                Tidak ada jadwal donor hari ini
               </p>
             </div>
           ) : (
             <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {donorHariIni.map(
-                (item) => (
+                {donorHariIni.map((item) => (
                   <div
                     key={item.id}
-                    className="flex min-h-[115px] overflow-hidden rounded-xl border border-gray-200 bg-white"
+                    className="flex min-h-[115px] items-stretch gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm"
                   >
-                    {/* CONTENT */}
-
-                    <div className="min-w-0 flex-1 p-4">
+                    <div className="min-w-0 flex-1 px-1 py-1">
                       <p className="text-[13px] font-semibold text-gray-900">
                         Donor Hari Ini
                       </p>
-
+                
                       <p className="mt-0.5 text-[11px] text-gray-400">
                         {item.tanggal}
                       </p>
-
+                
                       <p className="mt-3 truncate text-[14px] font-medium text-gray-900">
                         {item.lokasi}
                       </p>
-
+                
                       <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[11px] text-gray-500">
                         <MapPin className="h-3 w-3 shrink-0" />
-
-                        <span className="truncate">
-                          {item.alamat}
-                        </span>
+                        <span className="truncate">{item.alamat}</span>
                       </div>
-
+                
                       <div className="mt-1 flex items-center gap-1 text-[11px] text-gray-500">
                         <Clock className="h-3 w-3 shrink-0" />
-
-                        <span>
-                          {item.waktu}
-                        </span>
+                        <span>{item.waktu}</span>
                       </div>
                     </div>
-
-                    {/* RED DECORATION */}
-
+                
                     <div
-                      className="w-[52px] shrink-0 bg-red-500"
+                      className="w-[64px] shrink-0 rounded-r-2xl bg-red-500"
                       aria-hidden="true"
                     />
                   </div>
-                )
-              )}
+                ))}
             </div>
           )}
         </section>
 
         {/* =================================================
-            TOTAL PENDONOR
+            TOTAL PENDONOR + USIA PENDONOR
         ================================================= */}
 
-        <div className="flex flex-col gap-5 xl:col-span-3">
-          {/* HARI INI */}
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:col-span-6">
+          {/* TOTAL PENDONOR */}
+          <div className="flex flex-col gap-5">
+            <section className="flex min-h-[150px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <p className="text-[15px] font-semibold text-gray-900">
+                Total Pendonor Hari ini
+              </p>
 
-          <section className="flex min-h-[150px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-[15px] font-semibold text-gray-900">
-              Total Pendonor Hari ini
-            </p>
+              <p className="mt-3 text-[80px] font-bold leading-none text-red-500">
+                {totalPendonorHariIni}
+              </p>
 
-            <p className="mt-3 text-[80px] font-bold leading-none text-red-500">
-              {totalPendonorHariIni}
-            </p>
+              <p className="mt-2 text-[13px] text-gray-900">Orang</p>
+            </section>
 
-            <p className="mt-2 text-[13px] text-gray-900">
-              Orang
-            </p>
-          </section>
+            <section className="flex min-h-[150px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <p className="text-[15px] font-semibold text-gray-900">
+                Total Pendonor 1 Bulan Terakhir
+              </p>
 
-          {/* BULAN TERAKHIR */}
+              <p className="mt-3 text-[80px] font-bold leading-none text-red-500">
+                {totalPendonorSebulan}
+              </p>
 
-          <section className="flex min-h-[150px] flex-1 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-[15px] font-semibold text-gray-900">
-              Total Pendonor 1 Bulan
-              Terakhir
-            </p>
-
-            <p className="mt-3 text-[80px] font-bold leading-none text-red-500">
-              {totalPendonorSebulan}
-            </p>
-
-            <p className="mt-2 text-[13px] text-gray-900">
-              Orang
-            </p>
-          </section>
-        </div>
-
-        {/* =================================================
-            USIA PENDONOR
-        ================================================= */}
-
-        <section className="min-h-[320px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-4">
-          <h2 className="text-[16px] font-semibold text-gray-900">
-            Usia Pendonor
-          </h2>
-
-          {/* DONUT */}
-
-          <div className="h-[195px]">
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
-              <PieChart>
-                <Pie
-                  data={usiaPendonor}
-                  dataKey="jumlah"
-                  nameKey="rentang"
-                  cx="50%"
-                  cy="52%"
-                  innerRadius={52}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  stroke="none"
-                >
-                  {usiaPendonor.map(
-                    (_, index) => (
-                      <Cell
-                        key={index}
-                        fill={
-                          WARNA_DONUT[
-                            index %
-                              WARNA_DONUT.length
-                          ]
-                        }
-                      />
-                    )
-                  )}
-                </Pie>
-
-                <Tooltip
-                  contentStyle={{
-                    border:
-                      "1px solid #eeeeee",
-                    borderRadius: "10px",
-                    fontSize: "13px",
-                  }}
-                  formatter={(value) => [
-                    `${value} orang`,
-                    "Pendonor",
-                  ]}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+              <p className="mt-2 text-[13px] text-gray-900">Orang</p>
+            </section>
           </div>
 
-          {/* LEGEND */}
+          {/* USIA PENDONOR */}
+          <section className="min-h-[320px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h2 className="text-[16px] font-semibold text-gray-900">
+              Usia Pendonor
+            </h2>
 
-          <ul className="mt-1 space-y-2">
-            {usiaPendonor.map(
-              (item, index) => (
+            <div className="h-[195px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                    <Pie
+                      data={usiaPendonor}
+                      dataKey="jumlah"
+                      nameKey="rentang"
+                      cx="50%"
+                      cy="52%"
+                      innerRadius={52}
+                      outerRadius={80}
+                      paddingAngle={3}
+                      cornerRadius={10}
+                      stroke="none"
+                    >
+                    {usiaPendonor.map((_, index) => (
+                      <Cell
+                        key={index}
+                        fill={WARNA_DONUT[index % WARNA_DONUT.length]}
+                      />
+                    ))}
+                  </Pie>
+
+                  <Tooltip
+                    contentStyle={{
+                      border: "1px solid #eeeeee",
+                      borderRadius: "10px",
+                      fontSize: "13px",
+                    }}
+                    formatter={(value) => [`${value} orang`, "Pendonor"]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <ul className="mt-1 space-y-2">
+              {usiaPendonor.map((item, index) => (
                 <li
                   key={item.rentang}
                   className="flex items-center text-[13px] text-gray-900"
@@ -638,26 +488,16 @@ export default function BerandaPage() {
                   <span
                     className="mr-2 h-3 w-3 shrink-0 rounded-full"
                     style={{
-                      backgroundColor:
-                        WARNA_DONUT[
-                          index %
-                            WARNA_DONUT.length
-                        ],
+                      backgroundColor: WARNA_DONUT[index % WARNA_DONUT.length],
                     }}
                   />
-
-                  <span>
-                    {item.rentang}
-                  </span>
-
-                  <span className="ml-auto text-gray-400">
-                    {item.jumlah}
-                  </span>
+                  <span>{item.rentang}</span>
+                  <span className="ml-auto text-gray-400">{item.jumlah}</span>
                 </li>
-              )
-            )}
-          </ul>
-        </section>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
     </div>
   );
